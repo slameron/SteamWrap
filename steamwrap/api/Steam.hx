@@ -1,16 +1,17 @@
 package steamwrap.api;
 
 import cpp.Lib;
+import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
-import haxe.Int64;
-import steamwrap.api.Steam.EnumerateWorkshopFilesResult;
 import steamwrap.api.Steam.DownloadUGCResult;
+import steamwrap.api.Steam.EnumerateWorkshopFilesResult;
 import steamwrap.api.Steam.GetItemInstallInfoResult;
 import steamwrap.api.Steam.GetPublishedFileDetailsResult;
 import steamwrap.api.Steam.SteamUGCDetails;
 import steamwrap.api.Steam.SteamUGCQueryCompleted;
 import steamwrap.helpers.Loader;
+import steamwrap.helpers.OneOfTwo;
 import steamwrap.helpers.Util;
 
 private enum LeaderboardOp {
@@ -139,6 +140,9 @@ class Steam {
 			SteamWrap_GetAchievementName = cpp.Lib.load("steamwrap", "SteamWrap_GetAchievementName", 1);
 			SteamWrap_GetSteamID = cpp.Lib.load("steamwrap", "SteamWrap_GetSteamID", 0);
 			SteamWrap_GetPersonaName = cpp.Lib.load("steamwrap", "SteamWrap_GetPersonaName", 0);
+			SteamWrap_GetSmallFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetSmallFriendAvatar", 1);
+			SteamWrap_GetMediumFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetMediumFriendAvatar", 1);
+			SteamWrap_GetLargeFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetLargeFriendAvatar", 1);
 			SteamWrap_GetImageSize = cpp.Lib.load("steamwrap", "SteamWrap_GetImageSize", 1);
 			SteamWrap_GetImageBytes = cpp.Lib.load("steamwrap", "SteamWrap_GetImageBytes", 1);
 			SteamWrap_SetStat = cpp.Lib.load("steamwrap", "SteamWrap_SetStat", 2);
@@ -260,16 +264,40 @@ class Steam {
 		return SteamWrap_GetPersonaName();
 	}
 
-	public static function getImageSize(imageKey:Int):Bool {
+	public static function getSmallFriendAvatar(imageKey:String):Int {
 		if (!active)
-			return false;
+			return -2;
+		return SteamWrap_GetSmallFriendAvatar(Std.parseInt(imageKey));
+	}
+
+	public static function getMediumFriendAvatar(imageKey:String):Int {
+		if (!active)
+			return -2;
+		return SteamWrap_GetMediumFriendAvatar(Std.parseInt(imageKey));
+	}
+
+	public static function getLargeFriendAvatar(imageKey:String):Int {
+		if (!active)
+			return -2;
+		return SteamWrap_GetLargeFriendAvatar(Std.parseInt(imageKey));
+	}
+
+	public static function getImageSize(imageKey:Int):Int {
+		if (!active)
+			return 0;
 		return SteamWrap_GetImageSize(imageKey);
 	}
 
-	public static function getImageBytes(imageKey:Int):Bytes {
+	/**
+	 * Gets the byte data of the provided Steam image.
+	 * @param imageKey The Steam image you want the bytes for
+	 * @return Returns `false` if the function failed, otherwise returns the byte data to pass into a new `Bytes` instance
+	 */
+	public static function getImageBytes(imageKey:Int):OneOfTwo<Bool, BytesData> {
 		if (!active)
 			return false;
-		var result = SteamWrap_GetImageRGBA(imageKey, width, height);
+
+		return SteamWrap_GetImageBytes(imageKey);
 	}
 
 	/**
@@ -685,8 +713,10 @@ class Steam {
 	private static var SteamWrap_GetAchievementName:Int->String;
 	private static var SteamWrap_GetSteamID:Void->String;
 	private static var SteamWrap_GetPersonaName:Void->String;
-	private static var SteamWrap_GetSmallFriendAvatar:String->Int;
-	private static var SteamWrap_GetImageSize:Int->Bool;
+	private static var SteamWrap_GetSmallFriendAvatar:Int->Int;
+	private static var SteamWrap_GetMediumFriendAvatar:Int->Int;
+	private static var SteamWrap_GetLargeFriendAvatar:Int->Int;
+	private static var SteamWrap_GetImageSize:Int->Int;
 	private static var SteamWrap_GetImageBytes:Int->OneOfTwo<Bool, BytesData>;
 	private static var SteamWrap_ClearAchievement:Dynamic;
 	private static var SteamWrap_IndicateAchievementProgress:Dynamic;

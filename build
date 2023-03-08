@@ -1,7 +1,14 @@
 #/bin/bash
 
+
+ls
+cd Documents/GitHub/SteamWrap/
+ls
+
 # build native ndll
 cd native
+
+pwd
 
 # removes old builds, just to be safe
 rm -rf obj
@@ -11,16 +18,16 @@ haxelib run hxcpp Build.xml -DHXCPP_M64
 
 # build the example program "Test"
 
-cd ..
-cd example
-haxe -cp .. Test.hx -main Test -cpp ../temp/hx/
+# cd ..
+# cd example
+# haxe -cp .. Test.hx -main Test -cpp ../temp/hx/
 
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-	echo Copying Linux executable
-	cp Test.sh ../ndll/Linux64
-	cp ../temp/hx/Test ../ndll/Linux64
-	cp ../native/lib/linux64/libsteam_api.so ../ndll/Linux64
-elif [[ "$OSTYPE" == "darwin" ]]; then
-	echo Copying Mac executable
-	cpp ../temp/hx/Test.app ../ndll/Mac64
-fi
+# if [[ "$OSTYPE" == "linux-gnu" ]]; then
+#	echo Copying Linux executable
+#	cp Test.sh ../ndll/Linux64
+#	cp ../temp/hx/Test ../ndll/Linux64
+#	cp ../native/lib/linux64/libsteam_api.so ../ndll/Linux64
+# elif [[ "$OSTYPE" == "darwin" ]]; then
+#	echo Copying Mac executable
+#	cpp ../temp/hx/Test.app ../ndll/Mac64
+# fi

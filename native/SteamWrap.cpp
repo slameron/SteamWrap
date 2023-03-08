@@ -1562,7 +1562,7 @@ extern "C"
 		if (!success)
 			return alloc_bool(success);
 
-		return alloc_array(1);
+		return bytes_to_hx(pAvatarRGBA, uImageSizeInBytes);
 	}
 	DEFINE_PRIM(SteamWrap_GetImageBytes, 1);
 
@@ -1570,12 +1570,12 @@ extern "C"
 	value SteamWrap_GetImageSize(int imageKey)
 	{
 		if (!CheckInit())
-			return alloc_bool(false);
+			return alloc_int(0);
 
 		uint32 width, height;
 		bool success = SteamUtils()->GetImageSize(imageKey, &width, &height);
 
-		return alloc_bool(success);
+		return alloc_int(width * height * 4);
 	}
 	DEFINE_PRIM(SteamWrap_GetImageSize, 1);
 
@@ -1613,6 +1613,44 @@ extern "C"
 		return alloc_string(returnData.str().c_str());
 	}
 	DEFINE_PRIM(SteamWrap_GetSteamID, 0);
+
+	//-----------------------------------------------------------------------------------------------------------
+	value SteamWrap_GetSmallFriendAvatar(uint64 steamID)
+	{
+		if (!CheckInit())
+			return alloc_int(-2);
+
+		CSteamID userId = CSteamID(steamID);
+
+		int steamHandle = SteamFriends()->GetSmallFriendAvatar(userId);
+		return alloc_int(steamHandle);
+	}
+	DEFINE_PRIM(SteamWrap_GetSmallFriendAvatar, 1);
+
+	//-----------------------------------------------------------------------------------------------------------
+	value SteamWrap_GetMediumFriendAvatar(uint64 steamID)
+	{
+		if (!CheckInit())
+			return alloc_int(-2);
+
+		CSteamID userId = CSteamID(steamID);
+
+		int steamHandle = SteamFriends()->GetMediumFriendAvatar(userId);
+		return alloc_int(steamHandle);
+	}
+	DEFINE_PRIM(SteamWrap_GetMediumFriendAvatar, 1);
+
+	//-----------------------------------------------------------------------------------------------------------
+	value SteamWrap_GetLargeFriendAvatar(uint64 steamID)
+	{
+		if (!CheckInit())
+			return alloc_int(-2);
+
+		CSteamID userId = CSteamID(steamID);
+		int steamHandle = SteamFriends()->GetLargeFriendAvatar(userId);
+		return alloc_int(steamHandle);
+	}
+	DEFINE_PRIM(SteamWrap_GetLargeFriendAvatar, 1);
 
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_RestartAppIfNecessary(value appId)
@@ -1702,7 +1740,7 @@ extern "C"
 			}
 			data << pvecPublishedFileID[i];
 		}
-		delete pvecPublishedFileID;
+		delete[] pvecPublishedFileID;
 
 		return alloc_string(data.str().c_str());
 	}
@@ -1927,8 +1965,8 @@ extern "C"
 		std::ostringstream data;
 		data << pchKey << "=" << pchValue;
 
-		delete pchKey;
-		delete pchValue;
+		delete[] pchKey;
+		delete[] pchValue;
 
 		return alloc_string(data.str().c_str());
 	}
@@ -1957,7 +1995,7 @@ extern "C"
 		std::ostringstream data;
 		data << pchMetadata;
 
-		delete pchMetadata;
+		delete[] pchMetadata;
 
 		return alloc_string(data.str().c_str());
 	}
