@@ -264,22 +264,28 @@ class Steam {
 		return SteamWrap_GetPersonaName();
 	}
 
-	public static function getSmallFriendAvatar(imageKey:String):Int {
+	public static function getSmallFriendAvatar(imageKey:String):String {
 		if (!active)
-			return -2;
-		return SteamWrap_GetSmallFriendAvatar(Std.parseInt(imageKey));
+			return 'Fail';
+		var result = SteamWrap_GetSmallFriendAvatar(imageKey);
+		trace(result);
+		return result;
 	}
 
-	public static function getMediumFriendAvatar(imageKey:String):Int {
+	public static function getMediumFriendAvatar(imageKey:String):String {
 		if (!active)
-			return -2;
-		return SteamWrap_GetMediumFriendAvatar(Std.parseInt(imageKey));
+			return 'Fail';
+		var result = SteamWrap_GetMediumFriendAvatar(imageKey);
+		trace(result);
+		return result;
 	}
 
-	public static function getLargeFriendAvatar(imageKey:String):Int {
+	public static function getLargeFriendAvatar(imageKey:String):String {
 		if (!active)
-			return -2;
-		return SteamWrap_GetLargeFriendAvatar(Std.parseInt(imageKey));
+			return 'Fail';
+		var result = SteamWrap_GetLargeFriendAvatar(imageKey);
+		trace(result);
+		return result;
 	}
 
 	public static function getImageSize(imageKey:Int):Int {
@@ -291,11 +297,11 @@ class Steam {
 	/**
 	 * Gets the byte data of the provided Steam image.
 	 * @param imageKey The Steam image you want the bytes for
-	 * @return Returns `false` if the function failed, otherwise returns the byte data to pass into a new `Bytes` instance
+	 * @return Returns a negative int if the function failed, otherwise returns the byte data to pass into a new `Bytes` instance
 	 */
-	public static function getImageBytes(imageKey:Int):OneOfTwo<Bool, BytesData> {
+	public static function getImageBytes(imageKey:Int):OneOfTwo<Int, BytesData> {
 		if (!active)
-			return false;
+			return -5;
 
 		return SteamWrap_GetImageBytes(imageKey);
 	}
@@ -713,11 +719,11 @@ class Steam {
 	private static var SteamWrap_GetAchievementName:Int->String;
 	private static var SteamWrap_GetSteamID:Void->String;
 	private static var SteamWrap_GetPersonaName:Void->String;
-	private static var SteamWrap_GetSmallFriendAvatar:Int->Int;
-	private static var SteamWrap_GetMediumFriendAvatar:Int->Int;
-	private static var SteamWrap_GetLargeFriendAvatar:Int->Int;
+	private static var SteamWrap_GetSmallFriendAvatar:String->String;
+	private static var SteamWrap_GetMediumFriendAvatar:String->String;
+	private static var SteamWrap_GetLargeFriendAvatar:String->String;
 	private static var SteamWrap_GetImageSize:Int->Int;
-	private static var SteamWrap_GetImageBytes:Int->OneOfTwo<Bool, BytesData>;
+	private static var SteamWrap_GetImageBytes:Int->OneOfTwo<Int, BytesData>;
 	private static var SteamWrap_ClearAchievement:Dynamic;
 	private static var SteamWrap_IndicateAchievementProgress:Dynamic;
 	private static var SteamWrap_StoreStats:Dynamic;

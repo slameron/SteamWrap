@@ -1545,14 +1545,14 @@ extern "C"
 	value SteamWrap_GetImageBytes(int imageKey)
 	{
 		if (!CheckInit())
-			return alloc_bool(false);
+			return alloc_int(-5);
 
 		uint32 width, height;
 		bool success = SteamUtils()->GetImageSize(imageKey, &width, &height);
 		if (!success)
 		{
 			// Log a warning message.
-			return alloc_bool(success);
+			return alloc_int(-2);
 		}
 
 		const int uImageSizeInBytes = width * height * 4;
@@ -1560,7 +1560,7 @@ extern "C"
 		success = SteamUtils()->GetImageRGBA(imageKey, pAvatarRGBA, uImageSizeInBytes);
 
 		if (!success)
-			return alloc_bool(success);
+			return alloc_int(-3);
 
 		return bytes_to_hx(pAvatarRGBA, uImageSizeInBytes);
 	}
@@ -1615,40 +1615,83 @@ extern "C"
 	DEFINE_PRIM(SteamWrap_GetSteamID, 0);
 
 	//-----------------------------------------------------------------------------------------------------------
-	value SteamWrap_GetSmallFriendAvatar(uint64 steamID)
+	value SteamWrap_GetSmallFriendAvatar(value steamID)
 	{
-		if (!CheckInit())
-			return alloc_int(-2);
+		if (!CheckInit() || !val_is_string(steamID))
+			return alloc_string("Failed");
 
-		CSteamID userId = CSteamID(steamID);
+		// Create uint64 from the string.
+		uint64 steamHandle;
+		std::istringstream handleStream(val_string(steamID));
+		if (!(handleStream >> steamHandle))
+		{
+			return alloc_string("Failed to convert string to uint64");
+		}
 
-		int steamHandle = SteamFriends()->GetSmallFriendAvatar(userId);
-		return alloc_int(steamHandle);
+		CSteamID userId = CSteamID(steamHandle);
+
+		if (SteamFriends()->RequestUserInformation(userId, false))
+			return alloc_string("Need to cache user info.");
+
+		int imageHandle = SteamFriends()->GetSmallFriendAvatar(userId);
+
+		std::ostringstream returnData;
+		returnData << imageHandle;
+
+		return alloc_string(returnData.str().c_str());
 	}
 	DEFINE_PRIM(SteamWrap_GetSmallFriendAvatar, 1);
 
 	//-----------------------------------------------------------------------------------------------------------
-	value SteamWrap_GetMediumFriendAvatar(uint64 steamID)
+	value SteamWrap_GetMediumFriendAvatar(value steamID)
 	{
-		if (!CheckInit())
-			return alloc_int(-2);
+		if (!CheckInit() || !val_is_string(steamID))
+			return alloc_string("Failed");
 
-		CSteamID userId = CSteamID(steamID);
+		// Create uint64 from the string.
+		uint64 steamHandle;
+		std::istringstream handleStream(val_string(steamID));
+		if (!(handleStream >> steamHandle))
+		{
+			return alloc_string("Failed to convert string to uint64");
+		}
 
-		int steamHandle = SteamFriends()->GetMediumFriendAvatar(userId);
-		return alloc_int(steamHandle);
+		CSteamID userId = CSteamID(steamHandle);
+
+		if (SteamFriends()->RequestUserInformation(userId, false))
+			return alloc_string("Need to cache user info.");
+
+		int imageHandle = SteamFriends()->GetMediumFriendAvatar(userId);
+		std::ostringstream returnData;
+		returnData << imageHandle;
+
+		return alloc_string(returnData.str().c_str());
 	}
 	DEFINE_PRIM(SteamWrap_GetMediumFriendAvatar, 1);
 
 	//-----------------------------------------------------------------------------------------------------------
-	value SteamWrap_GetLargeFriendAvatar(uint64 steamID)
+	value SteamWrap_GetLargeFriendAvatar(value steamID)
 	{
-		if (!CheckInit())
-			return alloc_int(-2);
+		if (!CheckInit() || !val_is_string(steamID))
+			return alloc_string("Failed");
 
-		CSteamID userId = CSteamID(steamID);
-		int steamHandle = SteamFriends()->GetLargeFriendAvatar(userId);
-		return alloc_int(steamHandle);
+		// Create uint64 from the string.
+		uint64 steamHandle;
+		std::istringstream handleStream(val_string(steamID));
+		if (!(handleStream >> steamHandle))
+		{
+			return alloc_string("Failed to convert string to uint64");
+		}
+
+		CSteamID userId = CSteamID(steamHandle);
+		if (SteamFriends()->RequestUserInformation(userId, false))
+			return alloc_string("Need to cache user info.");
+
+		int imageHandle = SteamFriends()->GetLargeFriendAvatar(userId);
+		std::ostringstream returnData;
+		returnData << imageHandle;
+
+		return alloc_string(returnData.str().c_str());
 	}
 	DEFINE_PRIM(SteamWrap_GetLargeFriendAvatar, 1);
 
