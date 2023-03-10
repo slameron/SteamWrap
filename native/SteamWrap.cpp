@@ -1603,6 +1603,33 @@ extern "C"
 	DEFINE_PRIM(SteamWrap_GetFriendPersonaState, 1);
 
 	//-----------------------------------------------------------------------------------------------------------
+
+	value SteamWrap_GetFriendCount(value friendFlags)
+	{
+		if (!CheckInit() || !val_is_int(friendFlags))
+			return alloc_int(0);
+
+		return alloc_int(SteamFriends()->GetFriendCount(val_int(friendFlags)));
+	}
+	DEFINE_PRIM(SteamWrap_GetFriendCount, 1);
+
+	//-----------------------------------------------------------------------------------------------------------
+
+	value SteamWrap_GetFriendByIndex(value friendIndex, value friendFlags)
+	{
+		if (!CheckInit() || !val_is_int(friendIndex) || !val_is_int(friendFlags))
+			return alloc_int(0);
+
+		CSteamID userId = SteamFriends()->GetFriendByIndex(val_int(friendIndex), val_int(friendFlags));
+
+		std::ostringstream returnData;
+		returnData << userId.ConvertToUint64();
+
+		return alloc_string(returnData.str().c_str());
+	}
+	DEFINE_PRIM(SteamWrap_GetFriendByIndex, 2);
+
+	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_GetImageBytes(int imageKey)
 	{
 		if (!CheckInit())

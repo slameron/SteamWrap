@@ -143,6 +143,8 @@ class Steam {
 			SteamWrap_GetFriendPersonaName = cpp.Lib.load("steamwrap", "SteamWrap_GetFriendPersonaName", 1);
 			SteamWrap_GetPersonaState = cpp.Lib.load("steamwrap", "SteamWrap_GetPersonaState", 0);
 			SteamWrap_GetFriendPersonaState = cpp.Lib.load("steamwrap", "SteamWrap_GetFriendPersonaState", 1);
+			SteamWrap_GetFriendCount = cpp.Lib.load("steamwrap", "SteamWrap_GetFriendCount", 1);
+			SteamWrap_GetFriendByIndex = cpp.Lib.load("steamwrap", "SteamWrap_GetFriendByIndex", 2);
 			SteamWrap_GetSmallFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetSmallFriendAvatar", 1);
 			SteamWrap_GetMediumFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetMediumFriendAvatar", 1);
 			SteamWrap_GetLargeFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetLargeFriendAvatar", 1);
@@ -283,6 +285,18 @@ class Steam {
 		if (!active)
 			return "unknown";
 		return StateToString(SteamWrap_GetFriendPersonaState(steamID));
+	}
+
+	public static function getFriendCount(friendFlags:Int):Int {
+		if (!active)
+			return 0;
+		return SteamWrap_GetFriendCount(friendFlags);
+	}
+
+	public static function getFriendByIndex(index:Int, friendFlags:Int):String {
+		if (!active)
+			return "unknown";
+		return SteamWrap_GetFriendByIndex(index, friendFlags);
 	}
 
 	public static function getSmallFriendAvatar(imageKey:String):String {
@@ -770,6 +784,8 @@ class Steam {
 	private static var SteamWrap_GetFriendPersonaName:String->String;
 	private static var SteamWrap_GetPersonaState:Void->Int;
 	private static var SteamWrap_GetFriendPersonaState:String->Int;
+	private static var SteamWrap_GetFriendCount:Int->Int;
+	private static var SteamWrap_GetFriendByIndex:Int->Int->String;
 	private static var SteamWrap_GetSmallFriendAvatar:String->String;
 	private static var SteamWrap_GetMediumFriendAvatar:String->String;
 	private static var SteamWrap_GetLargeFriendAvatar:String->String;
