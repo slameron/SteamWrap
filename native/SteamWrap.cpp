@@ -1542,6 +1542,67 @@ extern "C"
 	DEFINE_PRIM(SteamWrap_GetPersonaName, 0);
 
 	//-----------------------------------------------------------------------------------------------------------
+
+	value SteamWrap_GetFriendPersonaName(value steamID)
+	{
+		if (!CheckInit() || !val_is_string(steamID))
+			return alloc_string("unknown");
+
+		// Create uint64 from the string.
+		uint64 steamHandle;
+		std::istringstream handleStream(val_string(steamID));
+		if (!(handleStream >> steamHandle))
+		{
+			return alloc_string("Failed to convert string to uint64");
+		}
+
+		CSteamID friendID = CSteamID(steamHandle);
+
+		const char *persona = SteamFriends()->GetFriendPersonaName(friendID);
+
+		return alloc_string(persona);
+	}
+	DEFINE_PRIM(SteamWrap_GetFriendPersonaName, 1);
+
+	//-----------------------------------------------------------------------------------------------------------
+
+	value SteamWrap_GetPersonaState()
+	{
+		if (!CheckInit())
+			return alloc_string("Unknown");
+
+		CSteamID friendID = CSteamID(SteamUser()->GetSteamID());
+
+		EPersonaState friendState = SteamFriends()->GetFriendPersonaState(friendID);
+
+		return alloc_int(friendState);
+	}
+	DEFINE_PRIM(SteamWrap_GetPersonaState, 0);
+
+	//-----------------------------------------------------------------------------------------------------------
+
+	value SteamWrap_GetFriendPersonaState(value steamID)
+	{
+		if (!CheckInit() || !val_is_string(steamID))
+			return alloc_string("Unknown");
+
+		// Create uint64 from the string.
+		uint64 steamHandle;
+		std::istringstream handleStream(val_string(steamID));
+		if (!(handleStream >> steamHandle))
+		{
+			return alloc_string("Unknown");
+		}
+
+		CSteamID friendID = CSteamID(steamHandle);
+
+		EPersonaState friendState = SteamFriends()->GetFriendPersonaState(friendID);
+
+		return alloc_int(friendState);
+	}
+	DEFINE_PRIM(SteamWrap_GetFriendPersonaState, 1);
+
+	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_GetImageBytes(int imageKey)
 	{
 		if (!CheckInit())

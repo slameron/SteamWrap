@@ -140,6 +140,9 @@ class Steam {
 			SteamWrap_GetAchievementName = cpp.Lib.load("steamwrap", "SteamWrap_GetAchievementName", 1);
 			SteamWrap_GetSteamID = cpp.Lib.load("steamwrap", "SteamWrap_GetSteamID", 0);
 			SteamWrap_GetPersonaName = cpp.Lib.load("steamwrap", "SteamWrap_GetPersonaName", 0);
+			SteamWrap_GetFriendPersonaName = cpp.Lib.load("steamwrap", "SteamWrap_GetFriendPersonaName", 1);
+			SteamWrap_GetPersonaState = cpp.Lib.load("steamwrap", "SteamWrap_GetPersonaState", 0);
+			SteamWrap_GetFriendPersonaState = cpp.Lib.load("steamwrap", "SteamWrap_GetFriendPersonaState", 1);
 			SteamWrap_GetSmallFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetSmallFriendAvatar", 1);
 			SteamWrap_GetMediumFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetMediumFriendAvatar", 1);
 			SteamWrap_GetLargeFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetLargeFriendAvatar", 1);
@@ -262,6 +265,24 @@ class Steam {
 		if (!active)
 			return "unknown";
 		return SteamWrap_GetPersonaName();
+	}
+
+	public static function getFriendPersonaName(steamID:String):String {
+		if (!active)
+			return "unknown";
+		return SteamWrap_GetFriendPersonaName(steamID);
+	}
+
+	public static function getPersonaState():String {
+		if (!active)
+			return "unknown";
+		return StateToString(SteamWrap_GetPersonaState());
+	}
+
+	public static function getFriendPersonaState(steamID:String):String {
+		if (!active)
+			return "unknown";
+		return StateToString(SteamWrap_GetFriendPersonaState(steamID));
 	}
 
 	public static function getSmallFriendAvatar(imageKey:String):String {
@@ -540,6 +561,33 @@ class Steam {
 			trace(str);
 	}
 
+	private static inline function StateToString(state:Int) {
+		//-----------------------------------------------------------------------------------------------------------
+
+		var stringState:String = "Default";
+		switch (state) {
+			case 0:
+				stringState = "Offline";
+			case 1:
+				stringState = "Online";
+			case 2:
+				stringState = "Busy";
+			case 3:
+				stringState = "Away";
+			case 4:
+				stringState = "Snooze";
+			case 5:
+				stringState = "Looking to Trade";
+			case 6:
+				stringState = "Looking to Play";
+
+			default:
+				stringState = "Unknown";
+		}
+
+		return stringState;
+	}
+
 	private static function processNextLeaderboardOp() {
 		var op = leaderboardOps.pop();
 		if (op == null)
@@ -719,6 +767,9 @@ class Steam {
 	private static var SteamWrap_GetAchievementName:Int->String;
 	private static var SteamWrap_GetSteamID:Void->String;
 	private static var SteamWrap_GetPersonaName:Void->String;
+	private static var SteamWrap_GetFriendPersonaName:String->String;
+	private static var SteamWrap_GetPersonaState:Void->Int;
+	private static var SteamWrap_GetFriendPersonaState:String->Int;
 	private static var SteamWrap_GetSmallFriendAvatar:String->String;
 	private static var SteamWrap_GetMediumFriendAvatar:String->String;
 	private static var SteamWrap_GetLargeFriendAvatar:String->String;
