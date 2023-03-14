@@ -78,6 +78,11 @@ class Steam {
 	public static var matchmaking(default, null):Matchmaking;
 
 	/**
+	 * Steam Friends API
+	 */
+	public static var friends(default, null):Friends;
+
+	/**
 	 * DEPRECATED: The Steam Workshop API, provided here for legacy support. The UGC API supercedes it and is generally preferred.
 	 */
 	public static var workshop(default, null):Workshop;
@@ -183,6 +188,7 @@ class Steam {
 			workshop = new Workshop(appId, customTrace);
 			networking = new Networking(appId, customTrace);
 			matchmaking = new Matchmaking(appId, customTrace);
+			friends = new Friends(appId, customTrace);
 		} else {
 			customTrace("Steam failed to activate");
 			// restart under Steam
