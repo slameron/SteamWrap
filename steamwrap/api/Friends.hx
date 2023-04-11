@@ -24,6 +24,15 @@ import steamwrap.helpers.SteamBase;
 	public function getFriend(steamID:SteamID):Friend
 		return friends.exists(steamID) ? friends.get(steamID) : addFriend(steamID);
 
+	public function getFriends():Array<Friend> {
+		var f:Array<Friend> = [];
+
+		for (friend in friends)
+			f.push(friend);
+
+		return f;
+	}
+
 	public function addFriend(steamID:SteamID):Friend {
 		var friend = new Friend(steamID);
 		friends.set(steamID, friend);
