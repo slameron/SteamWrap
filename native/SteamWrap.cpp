@@ -178,6 +178,7 @@ static const char *kEventTypeOnDownloadItem = "ItemDownloaded";
 static const char *kEventTypeOnItemInstalled = "ItemInstalled";
 static const char *kEventTypeOnUGCQueryCompleted = "UGCQueryCompleted";
 static const char *kEventTypeOnLobbyJoined = "LobbyJoined";
+static const char *kEventTypeOnLobbyUpdate = "LobbyUpdate";
 static const char *kEventTypeOnLobbyJoinRequested = "LobbyJoinRequested";
 static const char *kEventTypeOnLobbyCreated = "LobbyCreated";
 static const char *kEventTypeOnLobbyListReceived = "LobbyListReceived";
@@ -301,7 +302,8 @@ public:
 						m_CallbackAchievementStored(this, &CallbackHandler::OnAchievementStored),
 						m_CallbackGamepadTextInputDismissed(this, &CallbackHandler::OnGamepadTextInputDismissed),
 						m_CallbackDownloadItemResult(this, &CallbackHandler::OnDownloadItem),
-						m_CallbackItemInstalled(this, &CallbackHandler::OnItemInstalled)
+						m_CallbackItemInstalled(this, &CallbackHandler::OnItemInstalled),
+						m_CallbackLobbyUpdate(this, &CallbackHandler::OnLobbyUpdate)
 	{
 	}
 
@@ -312,6 +314,7 @@ public:
 	STEAM_CALLBACK(CallbackHandler, OnDownloadItem, DownloadItemResult_t, m_CallbackDownloadItemResult);
 	STEAM_CALLBACK(CallbackHandler, OnItemInstalled, ItemInstalled_t, m_CallbackItemInstalled);
 	STEAM_CALLBACK(CallbackHandler, OnLobbyJoinRequested, GameLobbyJoinRequested_t);
+	STEAM_CALLBACK(CallbackHandler, OnLobbyUpdate, LobbyChatUpdate_t, m_CallbackLobbyUpdate);
 
 	void FindLeaderboard(const char *name);
 	void OnLeaderboardFound(LeaderboardFindResult_t *pResult, bool bIOFailure);
@@ -2584,6 +2587,7 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 			return alloc_bool(false);
 	}
 	DEFINE_PRIM(SteamWrap_ActivateInviteOverlay, 0);
+
 #pragma endregion
 
 #pragma region Lobby list
@@ -2745,6 +2749,16 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 	{
 		SteamWrap_LobbyID.SetFromUint64(pResult->m_ulSteamIDLobby);
 		SendEvent(Event(kEventTypeOnLobbyJoined, !bIOFailure, id_to_hx(pResult->m_ulSteamIDLobby)));
+	}
+
+	void CallbackHandler::OnLobbyUpdate(LobbyChatUpdate_t *pResult)
+	{
+		value obj = alloc_empty_object();
+		alloc_field(obj, val_id("lobbyID"), id_to_hx(pResult->m_ulSteamIDLobby));
+		alloc_field(obj, val_id("changedID"), id_to_hx(pResult->m_ulSteamIDUserChanged));
+		alloc_field(obj, val_id("makingChangeID"), id_to_hx(pResult->m_ulSteamIDMakingChange));
+		alloc_field(obj, val_id("flags"), value(pResult->m_rgfChatMemberStateChange));
+		SendEvent(Event(kEventTypeOnLobbyUpdate, true, id_to_hx(pResult->m_ulSteamIDLobby)));
 	}
 
 	value SteamWrap_JoinLobby(value id)

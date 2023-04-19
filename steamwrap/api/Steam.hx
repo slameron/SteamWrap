@@ -767,6 +767,10 @@ class Steam {
 				if (matchmaking.whenLobbyListReceived != null) {
 					matchmaking.whenLobbyListReceived(success);
 				}
+			case "LobbyUpdate":
+				if (matchmaking.whenLobbyUpdate != null) {
+					matchmaking.whenLobbyUpdate(obj);
+				}
 		}
 	}
 
