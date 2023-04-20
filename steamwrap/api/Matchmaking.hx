@@ -119,6 +119,15 @@ class Matchmaking extends SteamBase {
 	private var SteamWrap_LobbySetData = Loader.loadRaw("SteamWrap_LobbySetData", 2);
 
 	/**
+	 * Gets lobby data of the specified lobby. If `lobby` is not provided, it uses the current lobby.
+	 */
+	public function getLobbyData(field:String, ?lobby:SteamID):String {
+		return SteamWrap_LobbyGetData(lobby != null ? lobby : Steam.matchmaking.getLobbyID(), field);
+	}
+
+	private var SteamWrap_LobbyGetData = Loader.loadRaw("SteamWrap_LobbyGetData", 2);
+
+	/**
 	 * Changes lobby type (visibility setting). Only lobby owner can do this.
 	 */
 	public function setLobbyType(type:LobbyType):Bool {
