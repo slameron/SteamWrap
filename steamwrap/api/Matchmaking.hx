@@ -116,6 +116,19 @@ class Matchmaking extends SteamBase {
 		return SteamWrap_LobbySetData(field, value);
 	}
 
+	/**
+	 * Changes multiple fields of lobby data.
+	 * Only lobby' owner can change lobby data.
+	 * @param data Pass in an array of objects with `field` and `value` fields. Ex. `[{field: 'owner', value: Steam.getPersonaName()}, {field: 'maxMembers', value: 4}]`
+	 */
+	public function batchSetLobbyData(data:Array<{
+		field:String,
+		value:Dynamic
+	}>) {
+		for (item in data)
+			SteamWrap_LobbySetData(item.field, '${item.value}');
+	}
+
 	private var SteamWrap_LobbySetData = Loader.loadRaw("SteamWrap_LobbySetData", 2);
 
 	/**
@@ -241,7 +254,6 @@ class Matchmaking extends SteamBase {
 	private var SteamWrap_LobbyListAddDistanceFilter = Loader.loadRaw("SteamWrap_LobbyListAddDistanceFilter", 1);
 
 	// }
-
 	private function new(appId:Int, customTrace:String->Void) {
 		if (active)
 			return;

@@ -12,6 +12,7 @@ import steamwrap.api.Steam.SteamUGCDetails;
 import steamwrap.api.Steam.SteamUGCQueryCompleted;
 import steamwrap.helpers.Loader;
 import steamwrap.helpers.OneOfTwo;
+import steamwrap.helpers.PacketManager;
 import steamwrap.helpers.Util;
 
 private enum LeaderboardOp {
@@ -81,6 +82,11 @@ class Steam {
 	 * Steam Friends API
 	 */
 	public static var friends(default, null):Friends;
+
+	/**
+	 * Packet manager
+	 */
+	static var packetManager:PacketManager;
 
 	/**
 	 * DEPRECATED: The Steam Workshop API, provided here for legacy support. The UGC API supercedes it and is generally preferred.
@@ -189,6 +195,7 @@ class Steam {
 			networking = new Networking(appId, customTrace);
 			matchmaking = new Matchmaking(appId, customTrace);
 			friends = new Friends(appId, customTrace);
+			packetManager = new PacketManager(appId, customTrace);
 		} else {
 			customTrace("Steam failed to activate");
 			// restart under Steam
@@ -198,6 +205,40 @@ class Steam {
 	}
 
 	/*************PUBLIC***************/
+	/**
+	 * Adds a new event behavior to the packet manager. When Steam reads a packet of the type `eventType`, it will fire `callback` with the packet data as a parameter. If there is already an existing event of the same type, it will be overwritten.
+	 * @param eventType The name of the event to use when sending packets. Make sure to use the same string when using `Steam.networking.sendPacket`.
+	 * @param callback  Function with one dynamic parameter that will hold the data of the packet.
+	 * @param persistent If set to true, this behavior won't be cleared when switching states. You must use `removePacketEvent` if you want to clear this behavior.
+	 */
+	public static function addPacketEvent(eventType:String, callback:Dynamic->Void, persistent:Bool = false) {
+		packetManager.events.set(eventType, callback);
+		packetManager.eventPersistence.set(eventType, persistent);
+	}
+
+	/**
+	 * Removes a behavior from the packet manager, if it exists.
+	 * @param eventType The name of the event to remove.
+	 */
+	public static function removePacketEvent(eventType:String) {
+		if (packetManager.events.exists(eventType))
+			packetManager.events.remove(eventType);
+		if (packetManager.eventPersistence.exists(eventType))
+			packetManager.eventPersistence.remove(eventType);
+	}
+
+	/**
+	 * Removes all event behaviors that weren't added with persistent set to true. Be careful when calling this!
+	 */
+	public static function clearPacketEvents() {
+		for (event in packetManager.events.keys()) {
+			if (packetManager.eventPersistence[event])
+				continue;
+
+			removePacketEvent(event);
+		}
+	}
+
 	/**
 	 * Clear an achievement
 	 * @param	id	achievement identifier
@@ -453,6 +494,8 @@ class Steam {
 			wantStoreStats = false;
 			SteamWrap_StoreStats();
 		}
+
+		packetManager.onEnterFrame();
 	}
 
 	public static function openOverlayToURL(url:String) {

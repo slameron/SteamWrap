@@ -12,14 +12,13 @@ import steamwrap.helpers.Loader;
 @:allow(steamwrap.api.Steam)
 class Networking extends SteamBase {
 	/**
-	 * Sends a packet to everyone in the current lobby.
-	 * @param   toSelf  Whether or not you will receive the message as well
-	 * @param	bytes	Data to be sent
-	 * @param	size	Number of bytes to be sent (usually, bytes.length)
-	 * @param	type	Determines method of delivery and reliability
-	 * @return	Whether sending succeeded.
+	 * Calls `sendPacket()` for every member in the current lobby.
+	 * @param eventType The name of the event. Make sure to add a callback for this event using `Steam.addPacketEvent()`.
+	 * @param data The data you want to send.
+	 * @param type The type of packet you're sending. Valid options are `UNRELIABLE`, `UNRELIABLE_NO_DELAY`, `RELIABLE`, and `RELIABLE_WITH_BUFFERING`
+	 * @param toSelf Whether or not the sender should also receive the packet.
 	 */
-	public function broadcast(bytes:Bytes, size:Int, type:EP2PSend = UNRELIABLE, toSelf:Bool = true) {
+	public function broadcast(eventType:String, data:Dynamic, type:EP2PSend = UNRELIABLE, toSelf:Bool = true) {
 		if (Steam.matchmaking.getLobbyID() == '0')
 			return;
 
@@ -30,20 +29,22 @@ class Networking extends SteamBase {
 				if (Steam.getSteamID() == id)
 					continue;
 
-			sendPacket(id, bytes, size, type);
+			sendPacket(id, eventType, data, type);
 		}
 	}
 
 	/**
 	 * Sends a packet to the given endpoint.
-	 * @param	id	Steam ID of endpoint
-	 * @param	bytes	Data to be sent
-	 * @param	size	Number of bytes to be sent (usually, bytes.length)
-	 * @param	type	Determines method of delivery and reliability
-	 * @return	Whether sending succeeded.
+	 * @param id The SteamID of the endpoint. Usually the ID of another Steam user.
+	 * @param eventType The name of the event you're sending this packet for. Make sure to use `Steam.addPacketEvent()` to add a callback for when this packet is received.
+	 * @param data The data you want to send.
+	 * @param type The type of packet you're sending. Valid options are `UNRELIABLE`, `UNRELIABLE_NO_DELAY`, `RELIABLE`, and `RELIABLE_WITH_BUFFERING` 
 	 */
-	public function sendPacket(id:String, bytes:Bytes, size:Int, type:EP2PSend):Int {
-		return SteamWrap_SendPacket(id, bytes, size, cast type);
+	public function sendPacket(id:String, eventType:String, data:Dynamic, type:EP2PSend):Int {
+		var json = {type: eventType, data: data};
+		var bytes = Bytes.ofString(haxe.Json.stringify(json));
+
+		return SteamWrap_SendPacket(id, bytes, bytes.length, cast type);
 	}
 
 	// private var SteamWrap_SendP2PPacket = Loader.load("SteamWrap_SendP2PPacket", "coiii");
