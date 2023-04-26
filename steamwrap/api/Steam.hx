@@ -208,7 +208,7 @@ class Steam {
 	/**
 	 * Adds a new event behavior to the packet manager. When Steam reads a packet of the type `eventType`, it will fire `callback` with the packet data as a parameter. If there is already an existing event of the same type, it will be overwritten.
 	 * @param eventType The name of the event to use when sending packets. Make sure to use the same string when using `Steam.networking.sendPacket`.
-	 * @param callback  Function with one dynamic parameter that will hold the data of the packet.
+	 * @param callback  Function with one dynamic parameter that will hold the data of the packet. The data will include the message sent, and the id and name of the steam user who sent the message. The format of the data will be `{data: (message), sender: {id: (string of steamid), name: (string of steam name)}}`
 	 * @param persistent If set to true, this behavior won't be cleared when switching states. You must use `removePacketEvent` if you want to clear this behavior.
 	 */
 	public static function addPacketEvent(eventType:String, callback:Dynamic->Void, persistent:Bool = false) {

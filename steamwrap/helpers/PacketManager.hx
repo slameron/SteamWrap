@@ -13,12 +13,12 @@ import steamwrap.api.Steam;
 	public function onEnterFrame() {
 		if (Steam.active) {
 			while (Steam.networking.receivePacket()) {
-				var src = Steam.getFriendPersonaName(Steam.networking.getPacketSender());
+				var src = Steam.networking.getPacketSender();
 				var str = Steam.networking.getPacketData().toString();
 				var json = haxe.Json.parse(str);
 
 				var type = json.type;
-				var data = {sender: src, data: json.data};
+				var data:Dynamic = {sender: {name: Steam.getFriendPersonaName(src), id: src}, data: json.data};
 
 				if (events.exists(type))
 					events.get(type)(data);

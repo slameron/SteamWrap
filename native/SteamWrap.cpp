@@ -2587,6 +2587,17 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 	}
 	DEFINE_PRIM(SteamWrap_LobbyGetData, 2);
 
+	value SteamWrap_SetLobbyJoinable(value lobby, value joinable)
+	{
+		if (CheckInit() && val_is_string(lobby) && val_is_bool(joinable) && hx_to_id(lobby).IsValid())
+		{
+			return alloc_bool(SteamMatchmaking()->SetLobbyJoinable(hx_to_id(lobby), val_bool(joinable)));
+		}
+		else
+			return alloc_bool(false);
+	}
+	DEFINE_PRIM(SteamWrap_SetLobbyJoinable, 2);
+
 	value SteamWrap_ActivateInviteOverlay()
 	{
 		if (CheckInit() && SteamFriends() && SteamWrap_LobbyID.IsValid())

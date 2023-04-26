@@ -141,6 +141,16 @@ class Matchmaking extends SteamBase {
 	private var SteamWrap_LobbyGetData = Loader.loadRaw("SteamWrap_LobbyGetData", 2);
 
 	/**
+	 * Sets specified lobby to be joinable. If `lobby` is not provided, it uses the current lobby.
+	 * @return Returns true if successful, false if you aren't the owner of the lobby.
+	 */
+	public function setLobbyJoinable(joinable:Bool, ?lobby:SteamID):Bool {
+		return SteamWrap_SetLobbyJoinable(lobby != null ? lobby : Steam.matchmaking.getLobbyID(), joinable);
+	}
+
+	private var SteamWrap_SetLobbyJoinable = Loader.loadRaw("SteamWrap_SetLobbyJoinable", 2);
+
+	/**
 	 * Changes lobby type (visibility setting). Only lobby owner can do this.
 	 */
 	public function setLobbyType(type:LobbyType):Bool {
