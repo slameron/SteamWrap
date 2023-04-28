@@ -51,6 +51,50 @@ class Networking extends SteamBase {
 	private var SteamWrap_SendPacket = Loader.loadRaw("SteamWrap_SendPacket", 4);
 
 	/**
+	 * Calls `queuePacket()` for every member in the current lobby. Send these packets with `Steam.networking.sendQueuedPackets()`.
+	 * @param eventType The name of the event. Make sure to add a callback for this event using `Steam.addPacketEvent()`.
+	 * @param data The data you want to send.
+	 * @param type The type of packet you're sending. Valid options are `UNRELIABLE`, `UNRELIABLE_NO_DELAY`, `RELIABLE`, and `RELIABLE_WITH_BUFFERING`
+	 * @param toSelf Whether or not the sender should also receive the packet.
+	 */
+	public function queueBroadcast(eventType:String, data:Dynamic, type:EP2PSend = UNRELIABLE, toSelf:Bool = true) {
+		if (Steam.matchmaking.getLobbyID() == '0')
+			return;
+
+		for (i in 0...Steam.matchmaking.getLobbyMembers()) {
+			var id = Steam.matchmaking.getLobbyMember(i);
+
+			if (!toSelf)
+				if (Steam.getSteamID() == id)
+					continue;
+
+			queuePacket(id, eventType, data, type);
+		}
+	}
+
+	static var packetQueue:Array<{id:String, packet:Dynamic}> = [];
+
+	/**
+	 * Queues a packet to be sent when you call `Steam.networking.sendQueuedPackets()`.
+	 * @param id The SteamID of the endpoint. Usually the ID of another Steam user.
+	 * @param eventType The name of the event you're sending this packet for. Make sure to use `Steam.addPacketEvent()` to add a callback for when this packet is received.
+	 * @param data The data you want to send.
+	 * @param type The type of packet you're sending. Valid options are `UNRELIABLE`, `UNRELIABLE_NO_DELAY`, `RELIABLE`, and `RELIABLE_WITH_BUFFERING` 
+	 */
+	public function queuePacket(id:String, eventType:String, data:Dynamic, type:EP2PSend) {
+		packetQueue.push({id: id, packet: {type: eventType, data: data, sendType: type}});
+	}
+
+	/**
+		* Sends all packets that have been queued with `Steam.networking.queuePacket()` or `Steam.networking.queueBroadcast()`.
+		* @return for (i in packetQueue)
+					sendPacket(i.id, i.packet.type, i.packet.data, i.packet.sendType)
+	 */
+	public function sendQueuedPackets()
+		for (i in packetQueue)
+			sendPacket(i.id, i.packet.type, i.packet.data, i.packet.sendType);
+
+	/**
 	 * Pulls the next packet out of receive queue, returns whether there was one.
 	 * If successful, also fills out data for getPacketData/getPacketSender.
 	 */
