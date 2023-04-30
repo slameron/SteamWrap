@@ -34,6 +34,11 @@ class Networking extends SteamBase {
 	}
 
 	/**
+	 * Stores an incrementing number for each event, for each person you send an event to. The packet manager will drop packets whose sequence is less than that of the newest accepted packet.
+	 */
+	var sequencer:Map<String, Map<String, Int>> = [];
+
+	/**
 	 * Sends a packet to the given endpoint.
 	 * @param id The SteamID of the endpoint. Usually the ID of another Steam user.
 	 * @param eventType The name of the event you're sending this packet for. Make sure to use `Steam.addPacketEvent()` to add a callback for when this packet is received.
@@ -41,7 +46,15 @@ class Networking extends SteamBase {
 	 * @param type The type of packet you're sending. Valid options are `UNRELIABLE`, `UNRELIABLE_NO_DELAY`, `RELIABLE`, and `RELIABLE_WITH_BUFFERING` 
 	 */
 	public function sendPacket(id:String, eventType:String, data:Dynamic, type:EP2PSend):Int {
-		var json = {type: eventType, data: data};
+		if (!sequencer.exists(id))
+			sequencer.set(id, []);
+
+		if (sequencer.get(id).exists(eventType))
+			sequencer.get(id).set(eventType, 0);
+
+		sequencer.get(id).set(eventType, sequencer.get(id).get(eventType) + 1 % 500);
+
+		var json = {type: eventType, data: data, sequence: sequencer.get(id).get(eventType)};
 		var bytes = Bytes.ofString(haxe.Json.stringify(json));
 
 		return SteamWrap_SendPacket(id, bytes, bytes.length, cast type);
