@@ -35,7 +35,7 @@ import steamwrap.api.Steam;
 
 				if (sqcDiff > 300)
 					if (sequence < sequencer.get(src).get(type))
-						seqencer.get(src).set(type, sequence);
+						sequencer.get(src).set(type, sequence);
 
 				if (sequence < sequencer.get(src).get(type)) {
 					customTrace('dropped packet $sequence because it was older than most recent packet ${sequencer.get(src).get(type)}');
