@@ -42,7 +42,7 @@ import steamwrap.api.Steam;
 					return;
 				}
 
-				seqencer.get(src).set(type, sequence);
+				sequencer.get(src).set(type, sequence);
 
 				var data:Dynamic = {sender: {name: Steam.getFriendPersonaName(src), id: src}, data: json.data};
 
