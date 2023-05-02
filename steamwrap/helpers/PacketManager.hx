@@ -16,6 +16,7 @@ import steamwrap.api.Steam;
 		if (Steam.active) {
 			while (Steam.networking.receivePacket()) {
 				var src = Steam.networking.getPacketSender();
+
 				var str = Steam.networking.getPacketData().toString();
 				var json = haxe.Json.parse(str);
 
@@ -23,15 +24,16 @@ import steamwrap.api.Steam;
 
 				var sequence = json.sequence;
 
+				var data:Dynamic = {
+					sender: {id: src, name: Steam.getFriendPersonaName(src)},
+					data: json.data
+				};
+
 				if (isOldPacket(src, type, sequence))
 					return;
 
-				var data:Dynamic = {sender: {name: Steam.getFriendPersonaName(src), id: src}, data: json.data};
-
 				if (events.exists(type))
 					events.get(type)(data);
-				else
-					customTrace('There is no event for $type');
 			}
 		}
 	}
