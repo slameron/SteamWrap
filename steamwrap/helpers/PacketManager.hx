@@ -23,26 +23,8 @@ import steamwrap.api.Steam;
 
 				var sequence = json.sequence;
 
-				if (!sequencer.exists(src))
-					sequencer.set(src, []);
-
-				if (!sequencer.get(src).exists(type))
-					sequencer.get(src).set(type, sequence);
-
-				var sqcDiff = sequence - sequencer.get(src).get(type);
-				if (sqcDiff < 0)
-					sqcDiff = -sqcDiff;
-
-				if (sqcDiff > 300)
-					if (sequence < sequencer.get(src).get(type))
-						sequencer.get(src).set(type, sequence);
-
-				if (sequence < sequencer.get(src).get(type)) {
-					customTrace('dropped packet $sequence because it was older than most recent packet ${sequencer.get(src).get(type)}');
+				if (isOldPacket(src, type, sequence))
 					return;
-				}
-
-				sequencer.get(src).set(type, sequence);
 
 				var data:Dynamic = {sender: {name: Steam.getFriendPersonaName(src), id: src}, data: json.data};
 
@@ -52,5 +34,29 @@ import steamwrap.api.Steam;
 					customTrace('There is no event for $type');
 			}
 		}
+	}
+
+	function isOldPacket(src:String, type:String, sequence:Int) {
+		if (!sequencer.exists(src))
+			sequencer.set(src, []);
+
+		if (!sequencer.get(src).exists(type))
+			sequencer.get(src).set(type, sequence);
+
+		var sqcDiff = sequence - sequencer.get(src).get(type);
+		if (sqcDiff < 0)
+			sqcDiff = -sqcDiff;
+
+		if (sqcDiff > 300)
+			if (sequence < sequencer.get(src).get(type))
+				sequencer.get(src).set(type, sequence);
+
+		if (sequence < sequencer.get(src).get(type)) {
+			customTrace('dropped packet $sequence because it was older than most recent packet ${sequencer.get(src).get(type)}');
+			return true;
+		}
+
+		sequencer.get(src).set(type, sequence);
+		return false;
 	}
 }
