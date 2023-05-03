@@ -66,6 +66,9 @@ class Matchmaking extends SteamBase {
 	 * Leaves the current lobby, if any.
 	 */
 	public function leaveLobby():Bool {
+		Steam.matchmaking.whenLobbyUpdate = null;
+		Steam.clearPacketEvents();
+
 		return SteamWrap_LeaveLobby();
 	}
 

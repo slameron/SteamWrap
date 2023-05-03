@@ -228,7 +228,7 @@ class Steam {
 	}
 
 	/**
-	 * Removes all event behaviors that weren't added with persistent set to true. Be careful when calling this!
+	 * Removes all event behaviors that weren't added with persistent set to true. This is called automatically when leaving lobbies. Be careful when calling this!
 	 */
 	public static function clearPacketEvents() {
 		for (event in packetManager.events.keys()) {
