@@ -140,6 +140,7 @@ class Steam {
 			SteamWrap_Init = cpp.Lib.load("steamwrap", "SteamWrap_Init", 2);
 			SteamWrap_IsSteamInBigPictureMode = cpp.Lib.load("steamwrap", "SteamWrap_IsSteamInBigPictureMode", 0);
 			SteamWrap_IsSteamRunning = cpp.Lib.load("steamwrap", "SteamWrap_IsSteamRunning", 0);
+			SteamWrap_IsSteamRunningOnSteamDeck = cpp.Lib.load("steamwrap", "SteamWrap_IsSteamRunningOnSteamDeck", 0);
 			SteamWrap_IsOverlayEnabled = cpp.Lib.load("steamwrap", "SteamWrap_IsOverlayEnabled", 0);
 			SteamWrap_BOverlayNeedsPresent = cpp.Lib.load("steamwrap", "SteamWrap_BOverlayNeedsPresent", 0);
 			SteamWrap_RequestStats = cpp.Lib.load("steamwrap", "SteamWrap_RequestStats", 0);
@@ -350,7 +351,7 @@ class Steam {
 		if (!active)
 			return 'Fail';
 		var result = SteamWrap_GetSmallFriendAvatar(imageKey);
-		trace(result);
+
 		return result;
 	}
 
@@ -358,7 +359,7 @@ class Steam {
 		if (!active)
 			return 'Fail';
 		var result = SteamWrap_GetMediumFriendAvatar(imageKey);
-		trace(result);
+
 		return result;
 	}
 
@@ -366,7 +367,7 @@ class Steam {
 		if (!active)
 			return 'Fail';
 		var result = SteamWrap_GetLargeFriendAvatar(imageKey);
-		trace(result);
+
 		return result;
 	}
 
@@ -381,7 +382,7 @@ class Steam {
 	 * @param imageKey The Steam image you want the bytes for
 	 * @return Returns a negative int if the function failed, otherwise returns the byte data to pass into a new `Bytes` instance
 	 */
-	public static function getImageBytes(imageKey:Int):OneOfTwo<Int, BytesData> {
+	public static function getImageBytes(imageKey:String):OneOfTwo<Int, BytesData> {
 		if (!active)
 			return -5;
 
@@ -479,6 +480,17 @@ class Steam {
 			return false;
 		try {
 			return SteamWrap_IsSteamRunning();
+		} catch (msg:Dynamic) {
+			trace("error running steam: " + msg);
+		}
+		return false;
+	}
+
+	public static function isSteamRunningOnSteamDeck() {
+		if (!active)
+			return false;
+		try {
+			return SteamWrap_IsSteamRunningOnSteamDeck();
 		} catch (msg:Dynamic) {
 			trace("error running steam: " + msg);
 		}
@@ -843,7 +855,7 @@ class Steam {
 	private static var SteamWrap_GetMediumFriendAvatar:String->String;
 	private static var SteamWrap_GetLargeFriendAvatar:String->String;
 	private static var SteamWrap_GetImageSize:Int->Int;
-	private static var SteamWrap_GetImageBytes:Int->OneOfTwo<Int, BytesData>;
+	private static var SteamWrap_GetImageBytes:String->OneOfTwo<Int, BytesData>;
 	private static var SteamWrap_ClearAchievement:Dynamic;
 	private static var SteamWrap_IndicateAchievementProgress:Dynamic;
 	private static var SteamWrap_StoreStats:Dynamic;
@@ -857,6 +869,7 @@ class Steam {
 	private static var SteamWrap_BOverlayNeedsPresent:Dynamic;
 	private static var SteamWrap_IsSteamInBigPictureMode:Dynamic;
 	private static var SteamWrap_IsSteamRunning:Dynamic;
+	private static var SteamWrap_IsSteamRunningOnSteamDeck:Dynamic;
 	private static var SteamWrap_GetCurrentGameLanguage:Dynamic;
 	private static var SteamWrap_OpenOverlayToURL:Dynamic;
 	private static var SteamWrap_OpenOverlay:Dynamic;
