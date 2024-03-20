@@ -14,8 +14,6 @@ import steamwrap.helpers.SteamBase;
 		}
 		#end
 
-		trace(friends);
-
 		return active;
 	}
 
