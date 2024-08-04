@@ -814,6 +814,9 @@ class Steam {
 			case "LobbyJoined":
 				if (matchmaking.whenLobbyJoined != null)
 					matchmaking.whenLobbyJoined(success);
+			case "LobbyJoinFailed":
+				if (matchmaking.whenLobbyJoined != null)
+					matchmaking.whenLobbyJoined(!success);
 			case "LobbyJoinRequested":
 				if (matchmaking.whenLobbyJoinRequested != null) {
 					matchmaking.whenLobbyJoinRequested(obj);

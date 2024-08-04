@@ -178,6 +178,7 @@ static const char *kEventTypeOnDownloadItem = "ItemDownloaded";
 static const char *kEventTypeOnItemInstalled = "ItemInstalled";
 static const char *kEventTypeOnUGCQueryCompleted = "UGCQueryCompleted";
 static const char *kEventTypeOnLobbyJoined = "LobbyJoined";
+static const char *kEventTypeOnLobbyJoinFail = "LobbyJoinFailed";
 static const char *kEventTypeOnLobbyUpdate = "LobbyUpdate";
 static const char *kEventTypeOnLobbyJoinRequested = "LobbyJoinRequested";
 static const char *kEventTypeOnLobbyCreated = "LobbyCreated";
@@ -2798,6 +2799,12 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 
 	void CallbackHandler::OnLobbyJoined(LobbyEnter_t *pResult, bool bIOFailure)
 	{
+		if (pResult->m_EChatRoomEnterResponse > 1)
+		{
+			SendEvent(Event(kEventTypeOnLobbyJoinFail, !bIOFailure, id_to_hx(pResult->m_ulSteamIDLobby)));
+			return;
+		}
+
 		SteamWrap_LobbyID.SetFromUint64(pResult->m_ulSteamIDLobby);
 		SendEvent(Event(kEventTypeOnLobbyJoined, !bIOFailure, id_to_hx(pResult->m_ulSteamIDLobby)));
 	}
