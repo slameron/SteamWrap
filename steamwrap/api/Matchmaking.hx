@@ -94,13 +94,22 @@ class Matchmaking extends SteamBase {
 	private var SteamWrap_LobbyOwnerID = Loader.loadRaw("SteamWrap_LobbyOwnerID", 0);
 
 	/**
-	 * Returns the number of users in the current lobby.
+	 * Returns the number of users in the given lobby. If lobby is left null, returns the number of users in current lobby.
 	 */
-	public function getLobbyMembers():Int {
-		return SteamWrap_LobbyMemberCount();
+	public function getLobbyMembers(?lobby:String):Int {
+		return SteamWrap_LobbyMemberCount(lobby ?? getLobbyID());
 	}
 
-	private var SteamWrap_LobbyMemberCount = Loader.loadRaw("SteamWrap_LobbyMemberCount", 0);
+	private var SteamWrap_LobbyMemberCount = Loader.loadRaw("SteamWrap_LobbyMemberCount", 1);
+
+	/**
+	 * Returns the maximum number of users in the given lobby. If lobby is left null, returns the maximum number of users in current lobby.
+	 */
+	public function getLobbyMemberLimit(?lobby:String):Int {
+		return SteamWrap_LobbyMemberLimit(lobby ?? getLobbyID());
+	}
+
+	private var SteamWrap_LobbyMemberLimit = Loader.loadRaw("SteamWrap_LobbyMemberLimit", 1);
 
 	/**
 	 * Returns the ID of the given user (0...getLobbyMembers() excl) in the current lobby.

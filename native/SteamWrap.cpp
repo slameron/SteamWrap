@@ -1737,8 +1737,6 @@ extern "C"
 
 		int imageHandle = SteamFriends()->GetSmallFriendAvatar(userId);
 
-		printf("%d\n", imageHandle);
-
 		std::ostringstream returnData;
 		returnData << imageHandle;
 
@@ -1767,8 +1765,6 @@ extern "C"
 
 		int imageHandle = SteamFriends()->GetMediumFriendAvatar(userId);
 
-		printf("%d\n", imageHandle);
-
 		std::ostringstream returnData;
 		returnData << imageHandle;
 
@@ -1795,8 +1791,6 @@ extern "C"
 			return alloc_string("Need to cache user info.");
 
 		int imageHandle = SteamFriends()->GetLargeFriendAvatar(userId);
-
-		printf("%d\n", imageHandle);
 
 		std::ostringstream returnData;
 		returnData << imageHandle;
@@ -2573,13 +2567,23 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 	}
 	DEFINE_PRIM(SteamWrap_LobbyOwnerID, 0);
 
-	value SteamWrap_LobbyMemberCount()
+	value SteamWrap_LobbyMemberCount(value lobby)
 	{
 		swp_start(alloc_int(0));
-		swp_req(SteamWrap_LobbyID.IsValid());
-		return alloc_int(SteamMatchmaking()->GetNumLobbyMembers(SteamWrap_LobbyID));
+		swp_req(val_is_string(lobby));
+		swp_req(hx_to_id(lobby).IsValid());
+		return alloc_int(SteamMatchmaking()->GetNumLobbyMembers(hx_to_id(lobby)));
 	}
-	DEFINE_PRIM(SteamWrap_LobbyMemberCount, 0);
+	DEFINE_PRIM(SteamWrap_LobbyMemberCount, 1);
+
+	value SteamWrap_LobbyMemberLimit(value lobby)
+	{
+		swp_start(alloc_int(0));
+		swp_req(val_is_string(lobby));
+		swp_req(hx_to_id(lobby).IsValid());
+		return alloc_int(SteamMatchmaking()->GetLobbyMemberLimit(hx_to_id(lobby)));
+	}
+	DEFINE_PRIM(SteamWrap_LobbyMemberLimit, 1);
 
 	value SteamWrap_LobbyMemberID(value index)
 	{
@@ -3008,7 +3012,6 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 		{
 			return alloc_int(-4);
 		}
-		printf("gamepadindex is %d\n", handle);
 		InputHandle_t inputHandle = SteamInput()->GetControllerForGamepadIndex(handle);
 
 		return alloc_int(inputHandle);
@@ -3075,7 +3078,6 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 		{
 			return alloc_int(-4);
 		}
-		printf("gamepadindex is %d\n", handle);
 		InputHandle_t inputHandle = SteamInput()->GetControllerForGamepadIndex(handle);
 
 		std::ostringstream returnData;
