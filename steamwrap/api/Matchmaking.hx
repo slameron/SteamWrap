@@ -171,6 +171,12 @@ class Matchmaking extends SteamBase {
 
 	private var SteamWrap_SetLobbyType = Loader.load("SteamWrap_SetLobbyType", "ib");
 
+	public function setLobbyMemberLimit(limit:Int):Bool {
+		return SteamWrap_SetLobbyMemberLimit(limit);
+	}
+
+	private var SteamWrap_SetLobbyMemberLimit = Loader.loadRaw('SteamWrap_SetLobbyMemberLimit', 1);
+
 	/**
 	 * Displays the invitation overlay.
 	 * This only works while in a lobby.

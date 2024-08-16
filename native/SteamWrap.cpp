@@ -2586,6 +2586,17 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 	}
 	DEFINE_PRIM(SteamWrap_LobbyMemberLimit, 1);
 
+	value SteamWrap_SetLobbyMemberLimit(value limit)
+	{
+		if (CheckInit() && val_is_int(limit) && SteamWrap_LobbyID.IsValid())
+		{
+			return alloc_bool(SteamMatchmaking()->SetLobbyMemberLimit(SteamWrap_LobbyID, val_int(limit)));
+		}
+		else
+			return alloc_bool(false);
+	}
+	DEFINE_PRIM(SteamWrap_SetLobbyMemberLimit, 1)
+
 	value SteamWrap_LobbyMemberID(value index)
 	{
 		swp_start(val_noid);
