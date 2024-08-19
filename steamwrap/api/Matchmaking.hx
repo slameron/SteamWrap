@@ -289,7 +289,7 @@ class Matchmaking extends SteamBase {
 	}
 }
 
-@:enum abstract LobbyDistanceFilter(Int) {
+enum abstract LobbyDistanceFilter(Int) {
 	/** Show lobbies from roughly the same/adjacent country */
 	public var NEAR = 0;
 
@@ -303,7 +303,7 @@ class Matchmaking extends SteamBase {
 	public var WORLDWIDE = 3;
 }
 
-@:enum abstract LobbyType(Int) {
+enum abstract LobbyType(Int) {
 	/** Can only be joined by invitation */
 	public var PRIVATE = 0;
 
@@ -314,7 +314,7 @@ class Matchmaking extends SteamBase {
 	public var PUBLIC = 2;
 }
 
-@:enum abstract LobbyCmp(Int) {
+enum abstract LobbyCmp(Int) {
 	public var EQUAL = 0;
 	public var NOT_EQUAL = 3;
 	public var LESS_THAN = -1;

@@ -4,9 +4,7 @@ package steamwrap.data;
  * ...
  * @author 
  */
-@:enum
-abstract Locale(String) from String
-{
+enum abstract Locale(String) from String {
 	var BRAZILIAN = "brazilian";
 	var BULGARIAN = "bulgarian";
 	var CZECH = "czech";
@@ -35,45 +33,18 @@ abstract Locale(String) from String
 	var TURKISH = "turkish";
 	var UKRAINIAN = "ukrainian";
 	var UNKNOWN = "unknown";
-	
+
 	public function new(str:String) {
-		
 		str = str.toLowerCase();
-		
-		this = switch(str : Locale) {
-			
-			case 
-				Locale.BRAZILIAN, 
-				Locale.BULGARIAN, 
-				Locale.CZECH, 
-				Locale.DANISH, 
-				Locale.DUTCH, 
-				Locale.ENGLISH,
-				Locale.FINNISH, 
-				Locale.FRENCH, 
-				Locale.GERMAN, 
-				Locale.GREEK, 
-				Locale.HUNGARIAN, 
-				Locale.ITALIAN, 
-				Locale.JAPANESE,
-				Locale.KOREANA, 
-				Locale.KOREAN, 
-				Locale.NORWEGIAN, 
-				Locale.POLISH, 
-				Locale.PORTUGUESE, 
-				Locale.ROMANIAN,
-				Locale.RUSSIAN, 
-				Locale.SCHINESE, 
-				Locale.SPANISH, 
-				Locale.SWEDISH, 
-				Locale.TCHINESE, 
-				Locale.THAI, 
-				Locale.TURKISH,
-				Locale.UKRAINIAN: 
-					cast str;
+
+		this = switch (str : Locale) {
+			case Locale.BRAZILIAN, Locale.BULGARIAN, Locale.CZECH, Locale.DANISH, Locale.DUTCH, Locale.ENGLISH, Locale.FINNISH, Locale.FRENCH, Locale.GERMAN,
+				Locale.GREEK, Locale.HUNGARIAN, Locale.ITALIAN, Locale.JAPANESE, Locale.KOREANA, Locale.KOREAN, Locale.NORWEGIAN, Locale.POLISH,
+				Locale.PORTUGUESE, Locale.ROMANIAN, Locale.RUSSIAN, Locale.SCHINESE, Locale.SPANISH, Locale.SWEDISH, Locale.TCHINESE, Locale.THAI,
+				Locale.TURKISH, Locale.UKRAINIAN:
+				cast str;
 			default:
 				cast Locale.UNKNOWN;
 		}
-		
 	}
 }

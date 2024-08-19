@@ -1,8 +1,8 @@
 package steamwrap.api;
 
 import haxe.io.Bytes;
-import steamwrap.helpers.SteamBase;
 import steamwrap.helpers.Loader;
+import steamwrap.helpers.SteamBase;
 
 /**
  * Selective wrapper for Steam networking API.
@@ -18,7 +18,7 @@ class Networking extends SteamBase {
 	 * @param type The type of packet you're sending. Valid options are `UNRELIABLE`, `UNRELIABLE_NO_DELAY`, `RELIABLE`, and `RELIABLE_WITH_BUFFERING`
 	 * @param toSelf Whether or not the sender should also receive the packet.
 	 */
-	public function broadcast(eventType:String, data:Dynamic, type:EP2PSend = UNRELIABLE, toSelf:Bool = true) {
+	public function broadcast(eventType:String, data:Dynamic, type:SteamNetworkingSend, toSelf:Bool = true) {
 		if (Steam.matchmaking.getLobbyID() == '0')
 			return;
 
@@ -29,7 +29,7 @@ class Networking extends SteamBase {
 				if (Steam.getSteamID() == id)
 					continue;
 
-			sendPacket(id, eventType, data, type);
+			sendMessage(id, eventType, data, type);
 		}
 	}
 
@@ -44,7 +44,7 @@ class Networking extends SteamBase {
 	 * @param eventType The name of the event you're sending this packet for. Make sure to use `Steam.addPacketEvent()` to add a callback for when this packet is received.
 	 * @param data The data you want to send.
 	 * @param type The type of packet you're sending. Valid options are `UNRELIABLE`, `UNRELIABLE_NO_DELAY`, `RELIABLE`, and `RELIABLE_WITH_BUFFERING` 
-	 */
+	 */ @:deprecated('Uses deprecated ISteamNetworking, use sendMessage instead')
 	public function sendPacket(id:String, eventType:String, data:Dynamic, type:EP2PSend):Int {
 		if (!sequencer.exists(id))
 			sequencer.set(id, []);
@@ -60,8 +60,32 @@ class Networking extends SteamBase {
 		return SteamWrap_SendPacket(id, bytes, bytes.length, cast type);
 	}
 
-	// private var SteamWrap_SendP2PPacket = Loader.load("SteamWrap_SendP2PPacket", "coiii");
 	private var SteamWrap_SendPacket = Loader.loadRaw("SteamWrap_SendPacket", 4);
+
+	public function sendMessage(id:String, eventType:String, data:Dynamic, sendFlags:SteamNetworkingSend, remoteChannel:Int = 0) {
+		if (!sequencer.exists(id))
+			sequencer.set(id, []);
+
+		if (sequencer.get(id).exists(eventType))
+			sequencer.get(id).set(eventType, 0);
+
+		sequencer.get(id).set(eventType, sequencer.get(id).get(eventType) + 1 % 500);
+
+		var json = {type: eventType, data: data, sequence: sequencer.get(id).get(eventType)};
+		var bytes = Bytes.ofString(haxe.Json.stringify(json));
+
+		if (id == Steam.getSteamID())
+			return sendSelfMessage(id, json);
+		return SteamWrap_SendMessage(id, bytes, bytes.length, sendFlags, remoteChannel);
+	}
+
+	function sendSelfMessage(id:String, json:Dynamic) {
+		Steam.packetManager.selfMessages.push({src: id, json: json});
+	}
+
+	private var SteamWrap_SendMessage = Loader.loadRaw('SteamWrap_SendMessage', 5);
+
+	// private var SteamWrap_SendP2PPacket = Loader.load("SteamWrap_SendP2PPacket", "coiii");
 
 	/**
 	 * Calls `queuePacket()` for every member in the current lobby. Send these packets with `Steam.networking.sendQueuedPackets()`.
@@ -110,7 +134,7 @@ class Networking extends SteamBase {
 	/**
 	 * Pulls the next packet out of receive queue, returns whether there was one.
 	 * If successful, also fills out data for getPacketData/getPacketSender.
-	 */
+	 */ @:deprecated('Uses deprecated ISteamNetworking, use receiveMessage instead')
 	public function receivePacket():Bool {
 		return SteamWrap_ReceivePacket();
 	}
@@ -119,7 +143,7 @@ class Networking extends SteamBase {
 
 	/**
 	 * Returns the data of the last receives packet as Bytes.
-	 */
+	 */ @:deprecated('Uses deprecated ISteamNetworking, use getMessageBytes instead')
 	public function getPacketData():Bytes {
 		return Bytes.ofData(SteamWrap_GetPacketData());
 	}
@@ -129,11 +153,30 @@ class Networking extends SteamBase {
 	/**
 	 * Returns Steam ID of sender of the last received packet.
 	 */
+	@:deprecated('Uses deprecated ISteamNetworking, use getMessageSender instead')
 	public function getPacketSender():String {
 		return SteamWrap_GetPacketSender();
 	}
 
 	private var SteamWrap_GetPacketSender = Loader.loadRaw("SteamWrap_GetPacketSender", 0);
+
+	public function receiveMessage(remoteChannel:Int = 0):Bool {
+		return SteamWrap_ReceiveMessage(remoteChannel);
+	}
+
+	private var SteamWrap_ReceiveMessage = Loader.loadRaw("SteamWrap_ReceiveMessage", 1);
+
+	public function getMessageBytes():Bytes {
+		return Bytes.ofData(SteamWrap_GetMessageBytes());
+	}
+
+	private var SteamWrap_GetMessageBytes = Loader.loadRaw('SteamWrap_GetMessageBytes', 0);
+
+	public function getMessageSender():String {
+		return SteamWrap_GetMessageSender();
+	}
+
+	private var SteamWrap_GetMessageSender = Loader.loadRaw('SteamWrap_GetMessageSender', 0);
 
 	//
 	private function new(appId:Int, customTrace:String->Void) {
@@ -143,7 +186,7 @@ class Networking extends SteamBase {
 	}
 }
 
-@:enum abstract EP2PSend(Int) {
+enum abstract EP2PSend(Int) {
 	/** Akin to UDP */
 	public var UNRELIABLE = 0;
 
@@ -155,4 +198,14 @@ class Networking extends SteamBase {
 
 	/** Akin to TCP with Nagle's algorithm*/
 	public var RELIABLE_WITH_BUFFERING = 3;
+}
+
+enum abstract SteamNetworkingSend(Int) {
+	public var UNRELIABLE = 0;
+	public var NO_NAGLE = 1;
+	// public var UNRELIABLE_NO_NAGLE = UNRELIABLE | NO_NAGLE;
+	public var NO_DELAY = 4;
+	// public var UNRELIABLE_NO_DELAY = UNRELIABLE | NO_DELAY | NO_NAGLE;
+	public var RELIABLE = 8;
+	// public var RELIABLE_NO_NAGLE = RELIABLE | NO_NAGLE;
 }

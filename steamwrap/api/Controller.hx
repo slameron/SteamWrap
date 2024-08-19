@@ -686,7 +686,7 @@ class ESteamInputLEDFlags {
 	public static inline var RESTORE_USER_DEFAULT = 0x10;
 }
 
-@:enum abstract EInputActionOrigin(Int) {
+enum abstract EInputActionOrigin(Int) {
 	public static var fromStringMap(default, null):Map<String, EInputActionOrigin> = MacroHelper.buildMap("steamwrap.api.EInputActionOrigin");
 
 	public static var toStringMap(default, null):Map<EInputActionOrigin, String> = MacroHelper.buildMap("steamwrap.api.EInputActionOrigin", true);
@@ -1041,13 +1041,13 @@ class ESteamInputLEDFlags {
 	}
 }
 
-@:enum abstract ESteamControllerPad(Int) {
+enum abstract ESteamControllerPad(Int) {
 	public var LEFT = 0;
 	public var RIGHT = 1;
 	public var BOTH = 2;
 }
 
-@:enum abstract EControllerSource(Int) {
+enum abstract EControllerSource(Int) {
 	public var NONE = 0;
 	public var LEFTTRACKPAD = 1;
 	public var RIGHTTRACKPAD = 2;
@@ -1060,7 +1060,7 @@ class ESteamInputLEDFlags {
 	public var COUNT = 9;
 }
 
-@:enum abstract EControllerSourceMode(Int) {
+enum abstract EControllerSourceMode(Int) {
 	public var NONE = 0;
 	public var DPAD = 1;
 	public var BUTTONS = 2;
@@ -1076,12 +1076,12 @@ class ESteamInputLEDFlags {
 	public var MOUSEREGION = 12;
 }
 
-@:enum abstract EGamepadTextInputLineMode(Int) {
+enum abstract EGamepadTextInputLineMode(Int) {
 	public var SINGLE_LINE = 0;
 	public var MULTIPLE_LINES = 1;
 }
 
-@:enum abstract EGamepadTextInputMode(Int) {
+enum abstract EGamepadTextInputMode(Int) {
 	public var NORMAL = 0;
 	public var PASSWORD = 1;
 }

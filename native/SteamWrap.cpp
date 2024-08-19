@@ -2445,6 +2445,76 @@ extern "C"
 
 #pragma region Steam Networking
 #define SteamNetworking SteamNetworking()
+
+	value SteamWrap_SendMessage(value handle, value haxeBytes, value size, value sendFlags, value remoteChannel)
+	{
+		if (!CheckInit() || !val_is_string(handle) || !val_is_int(size) || !val_is_int(sendFlags) || !val_is_int(remoteChannel))
+			return alloc_bool(false);
+
+		SteamNetworkingIdentity identity;
+		uint64 u64Handle = strtoull(val_string(handle), NULL, 0);
+		identity.m_eType = k_ESteamNetworkingIdentityType_SteamID;
+		identity.SetSteamID(u64Handle);
+
+		CffiBytes bytes = getByteData(haxeBytes);
+		if (bytes.data == 0)
+			return alloc_bool(false);
+
+		EResult result = SteamNetworkingMessages()->SendMessageToUser(identity, bytes.data, (int32)val_int(size), val_int(sendFlags), val_int(remoteChannel));
+		if (result == k_EResultOK)
+			return alloc_bool(true);
+
+		return alloc_bool(false);
+	}
+	DEFINE_PRIM(SteamWrap_SendMessage, 5);
+
+	value MessageBytes;
+	value SteamWrap_GetMessageBytes()
+	{
+		if (!CheckInit())
+			return alloc_bool(false);
+		return MessageBytes;
+	}
+	DEFINE_PRIM(SteamWrap_GetMessageBytes, 0);
+
+	value MessageSender;
+	value SteamWrap_GetMessageSender()
+	{
+		if (!CheckInit())
+			return alloc_string("");
+		return MessageSender;
+	}
+	DEFINE_PRIM(SteamWrap_GetMessageSender, 0);
+
+	value SteamWrap_ReceiveMessage(value remoteChannel)
+	{
+		if (!CheckInit() /*|| !val_is_int(maxMessages)*/ || !val_is_int(remoteChannel))
+			return alloc_bool(false);
+
+		const int maxMessages = 1;
+		SteamNetworkingMessage_t *messages[maxMessages];
+
+		int messageCount = 0;
+		messageCount = SteamNetworkingMessages()
+						   ->ReceiveMessagesOnChannel(val_int(remoteChannel), messages, maxMessages);
+
+		if (messageCount <= 0)
+			return alloc_bool(false);
+
+		for (int i = 0; i < messageCount; i++)
+		{
+			SteamNetworkingMessage_t *message = messages[i];
+
+			MessageBytes = bytes_to_hx((unsigned char *)message->GetData(), message->GetSize());
+			if (message->m_identityPeer.m_eType == k_ESteamNetworkingIdentityType_SteamID)
+				MessageSender = id_to_hx(message->m_identityPeer.GetSteamID());
+
+			message->Release();
+			return alloc_bool(true);
+		}
+	}
+	DEFINE_PRIM(SteamWrap_ReceiveMessage, 1);
+
 	value SteamWrap_SendPacket(value handle, value haxeBytes, value size, value type)
 	{
 		if (!CheckInit() || !val_is_string(handle) || !val_is_int(size) || !val_is_int(type))

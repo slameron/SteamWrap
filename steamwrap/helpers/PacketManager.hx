@@ -12,12 +12,35 @@ import steamwrap.api.Steam;
 
 	var sequencer:Map<String, Map<String, Int>> = [];
 
+	public var selfMessages:Array<{src:String, json:Dynamic}> = [];
+
 	public function onEnterFrame() {
 		if (Steam.active) {
-			while (Steam.networking.receivePacket()) {
-				var src = Steam.networking.getPacketSender();
+			while (selfMessages.length > 0) {
+				var msg = selfMessages.shift();
+				var src = msg.src;
 
-				var str = Steam.networking.getPacketData().toString();
+				var json = msg.json;
+
+				var type = json.type;
+
+				var sequence = json.sequence;
+
+				var data:Dynamic = {
+					sender: {id: src, name: Steam.getFriendPersonaName(src)},
+					data: json.data
+				};
+
+				if (isOldPacket(src, type, sequence))
+					return;
+
+				if (events.exists(type))
+					events.get(type)(data);
+			}
+			while (Steam.networking.receiveMessage()) {
+				var src = Steam.networking.getMessageSender();
+
+				var str = Steam.networking.getMessageBytes().toString();
 				var json = haxe.Json.parse(str);
 
 				var type = json.type;

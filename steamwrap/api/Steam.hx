@@ -21,15 +21,13 @@ private enum LeaderboardOp {
 	DOWNLOAD(id:String, downloadType:LeaderboardDownloadType, numBefore:Int, numAfter:Int);
 }
 
-@:enum
-abstract LeaderboardDownloadType(Int) to Int {
+enum abstract LeaderboardDownloadType(Int) to Int {
 	var Global = 0;
 	var AroundUser = 1;
 	var AllFriends = 2;
 }
 
-@:enum
-abstract SteamNotificationPosition(Int) to Int {
+enum abstract SteamNotificationPosition(Int) to Int {
 	var TopLeft = 0;
 	var TopRight = 1;
 	var BottomRight = 2;
@@ -86,7 +84,7 @@ class Steam {
 	/**
 	 * Packet manager
 	 */
-	static var packetManager:PacketManager;
+	public static var packetManager:PacketManager;
 
 	/**
 	 * DEPRECATED: The Steam Workshop API, provided here for legacy support. The UGC API supercedes it and is generally preferred.
@@ -1544,7 +1542,7 @@ class SteamUGCDetails {
 	}
 }
 
-@:enum abstract EWorkshopFileType(Int) from Int to Int {
+enum abstract EWorkshopFileType(Int) from Int to Int {
 	var Community = 0; // normal Workshop item that can be subscribed to
 	var Microtransaction = 1; // Workshop item that is meant to be voted on for the purpose of selling in-game
 	var Collection = 2; // a collection of Workshop or Greenlight items
@@ -1575,7 +1573,7 @@ class SteamUGCDetails {
 	}
 }
 
-@:enum abstract EPublishedFileVisibility(Int) from Int to Int {
+enum abstract EPublishedFileVisibility(Int) from Int to Int {
 	var Public = 0;
 	var FriendsOnly = 1;
 	var Private = 2;
@@ -1593,7 +1591,7 @@ class SteamUGCDetails {
 	}
 }
 
-@:enum abstract EResult(Int) from Int to Int {
+enum abstract EResult(Int) from Int to Int {
 	var OK = 1; // success
 	var Fail = 2; // generic failure
 	var NoConnection = 3; // no/failed network connection
@@ -1716,7 +1714,7 @@ class SteamUGCDetails {
 	}
 }
 
-@:enum abstract EUGCReadAction(Int) from Int to Int {
+enum abstract EUGCReadAction(Int) from Int to Int {
 	/**
 	 * Keeps the file handle open unless the last byte is read.  You can use this when reading large files (over 100MB) in sequential chunks.
 	 * If the last byte is read, this will behave the same as Close.  Otherwise, it behaves the same as ContinueReading.
@@ -1749,7 +1747,7 @@ class SteamUGCDetails {
 	}
 }
 
-@:enum abstract EItemState(Int) from Int to Int {
+enum abstract EItemState(Int) from Int to Int {
 	/**item not tracked on client**/
 	var None = 0;
 
@@ -1791,7 +1789,7 @@ class SteamUGCDetails {
 	}
 }
 
-@:enum abstract EUGCQuery(Int) from Int to Int {
+enum abstract EUGCQuery(Int) from Int to Int {
 	var RankedByVote:Int = 0;
 	var RankedByPublicationDate:Int = 1;
 	var AcceptedForGameRankedByAcceptanceDate:Int = 2;
@@ -1825,7 +1823,7 @@ class SteamUGCDetails {
 	}
 }
 
-@:enum abstract EUGCMatchingUGCType(Int) from Int to Int {
+enum abstract EUGCMatchingUGCType(Int) from Int to Int {
 	/**both mtx items and ready-to-use items**/
 	var Items:Int = 0;
 
@@ -1871,7 +1869,7 @@ class SteamUGCDetails {
  * If the current logged in user is different than the specified user, the same options may not be 
  * allowed.
  */
-@:enum abstract EUserUGCList(Int) from Int to Int {
+enum abstract EUserUGCList(Int) from Int to Int {
 	var Published:Int = 0;
 	var VotedOn:Int = 1;
 	var VotedUp:Int = 2;
@@ -1895,7 +1893,7 @@ class SteamUGCDetails {
 	}
 }
 
-@:enum abstract EUserUGCListSortOrder(Int) from Int to Int {
+enum abstract EUserUGCListSortOrder(Int) from Int to Int {
 	var CreationOrderDesc:Int = 0;
 	var CreationOrderAsc:Int = 1;
 	var TitleAsc:Int = 2;
