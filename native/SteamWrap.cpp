@@ -3147,6 +3147,9 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 			case k_ESteamInputType_PS5Controller:
 				returnData << "PS5 Controller";
 				break;
+			case k_ESteamInputType_SwitchProController:
+				returnData << "Switch Pro";
+				break;
 			case k_ESteamInputType_SteamDeckController:
 				returnData << "Steam Deck";
 				break;
