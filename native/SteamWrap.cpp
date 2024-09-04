@@ -619,8 +619,8 @@ void CallbackHandler::OnScoreDownloaded(LeaderboardScoresDownloaded_t *pCallback
 	std::string leaderboardId = SteamUserStats()->GetLeaderboardName(pCallback->m_hSteamLeaderboard);
 
 	int numEntries = pCallback->m_cEntryCount;
-	if (numEntries > 10)
-		numEntries = 10;
+	// if (numEntries > 10)
+	//	numEntries = 10;
 
 	std::ostringstream data;
 	bool haveData = false;
