@@ -113,6 +113,11 @@ class Steam {
 	public static var whenQueryUGCRequestSent:SteamUGCQueryCompleted->Void;
 
 	/**
+	 * set callback per steamID that will get removed after first use
+	 */
+	public static var whenAvatarImageLoaded:Map<String, String->Void> = [];
+
+	/**
 	 * @param appId_	Your Steam APP ID (the numbers on the end of your store page URL - store.steampowered.com/app/XYZ)
 	 * @param notificationPosition	The position of the Steam Overlay Notification box.
 	 */
@@ -827,6 +832,12 @@ class Steam {
 				if (matchmaking.whenLobbyUpdate != null) {
 					matchmaking.whenLobbyUpdate(obj);
 				}
+
+			case "AvatarImageLoaded":
+				if (whenAvatarImageLoaded.exists(data)) {
+					whenAvatarImageLoaded.get(data)(data);
+					whenAvatarImageLoaded.remove(data);
+				}
 		}
 	}
 
@@ -1518,13 +1529,59 @@ class SteamUGCDetails {
 
 	public function toString():String {
 		var names:Array<String> = [
-			"publishedFileId", "result", "fileType", "creatorAppID", "consumerAppID", "title", "description", "steamIDOwner", "timeCreated", "timeUpdated",
-			"timeAddedToUserList", "visibility", "banned", "acceptedForUse", "tagsTruncated", "tags", "file", "previewFile", "fileName", "fileSize",
-			"previewFileSize", "url", "votesUp", "votesDown", "score", "numChildren"
+			"publishedFileId",
+			"result",
+			"fileType",
+			"creatorAppID",
+			"consumerAppID",
+			"title",
+			"description",
+			"steamIDOwner",
+			"timeCreated",
+			"timeUpdated",
+			"timeAddedToUserList",
+			"visibility",
+			"banned",
+			"acceptedForUse",
+			"tagsTruncated",
+			"tags",
+			"file",
+			"previewFile",
+			"fileName",
+			"fileSize",
+			"previewFileSize",
+			"url",
+			"votesUp",
+			"votesDown",
+			"score",
+			"numChildren"
 		];
 		var values:Array<Dynamic> = [
-			publishedFileId, result, fileType, creatorAppID, consumerAppID, title, description, steamIDOwner, timeCreated, timeUpdated, timeAddedToUserList,
-			visibility, banned, acceptedForUse, tagsTruncated, tags, file, previewFile, fileName, fileSize, previewFileSize, url, votesUp, votesDown, score,
+			publishedFileId,
+			result,
+			fileType,
+			creatorAppID,
+			consumerAppID,
+			title,
+			description,
+			steamIDOwner,
+			timeCreated,
+			timeUpdated,
+			timeAddedToUserList,
+			visibility,
+			banned,
+			acceptedForUse,
+			tagsTruncated,
+			tags,
+			file,
+			previewFile,
+			fileName,
+			fileSize,
+			previewFileSize,
+			url,
+			votesUp,
+			votesDown,
+			score,
 			numChildren
 		];
 

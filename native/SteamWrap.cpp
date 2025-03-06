@@ -183,6 +183,7 @@ static const char *kEventTypeOnLobbyUpdate = "LobbyUpdate";
 static const char *kEventTypeOnLobbyJoinRequested = "LobbyJoinRequested";
 static const char *kEventTypeOnLobbyCreated = "LobbyCreated";
 static const char *kEventTypeOnLobbyListReceived = "LobbyListReceived";
+static const char *kEventTypeOnAvatarImageLoaded = "AvatarImageLoaded";
 
 // A simple data structure that holds on to the native 64-bit handles and maps them to regular ints.
 // This is because it is cumbersome to pass back 64-bit values over CFFI, and strictly speaking, the haxe
@@ -304,7 +305,8 @@ public:
 						m_CallbackGamepadTextInputDismissed(this, &CallbackHandler::OnGamepadTextInputDismissed),
 						m_CallbackDownloadItemResult(this, &CallbackHandler::OnDownloadItem),
 						m_CallbackItemInstalled(this, &CallbackHandler::OnItemInstalled),
-						m_CallbackLobbyUpdate(this, &CallbackHandler::OnLobbyUpdate)
+						m_CallbackLobbyUpdate(this, &CallbackHandler::OnLobbyUpdate),
+						m_CallbackAvatarImageLoaded(this, &CallbackHandler::OnAvatarImageLoaded)
 	{
 	}
 
@@ -316,6 +318,7 @@ public:
 	STEAM_CALLBACK(CallbackHandler, OnItemInstalled, ItemInstalled_t, m_CallbackItemInstalled);
 	STEAM_CALLBACK(CallbackHandler, OnLobbyJoinRequested, GameLobbyJoinRequested_t);
 	STEAM_CALLBACK(CallbackHandler, OnLobbyUpdate, LobbyChatUpdate_t, m_CallbackLobbyUpdate);
+	STEAM_CALLBACK(CallbackHandler, OnAvatarImageLoaded, AvatarImageLoaded_t, m_CallbackAvatarImageLoaded);
 
 	void FindLeaderboard(const char *name);
 	void OnLeaderboardFound(LeaderboardFindResult_t *pResult, bool bIOFailure);
@@ -387,6 +390,14 @@ public:
 void CallbackHandler::OnGamepadTextInputDismissed(GamepadTextInputDismissed_t *pCallback)
 {
 	SendEvent(Event(kEventTypeOnGamepadTextInputDismissed, pCallback->m_bSubmitted));
+}
+
+void CallbackHandler::OnAvatarImageLoaded(AvatarImageLoaded_t *pCallback)
+{
+	std::ostringstream returnData;
+	returnData << pCallback->m_steamID.ConvertToUint64();
+
+	SendEvent(Event(kEventTypeOnAvatarImageLoaded, true, returnData.str().c_str()));
 }
 
 void CallbackHandler::OnUserStatsReceived(UserStatsReceived_t *pCallback)
