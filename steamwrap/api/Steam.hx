@@ -117,6 +117,8 @@ class Steam {
 	 */
 	public static var whenAvatarImageLoaded:Map<String, String->Void> = [];
 
+	public static var whenPersonaStateChange:Map<String, String->Void> = [];
+
 	/**
 	 * @param appId_	Your Steam APP ID (the numbers on the end of your store page URL - store.steampowered.com/app/XYZ)
 	 * @param notificationPosition	The position of the Steam Overlay Notification box.
@@ -163,6 +165,7 @@ class Steam {
 			SteamWrap_GetSmallFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetSmallFriendAvatar", 1);
 			SteamWrap_GetMediumFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetMediumFriendAvatar", 1);
 			SteamWrap_GetLargeFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetLargeFriendAvatar", 1);
+			SteamWrap_RequestUserInformation = cpp.Lib.load("steamwrap", "SteamWrap_RequestUserInformation", 1);
 			SteamWrap_GetImageSize = cpp.Lib.load("steamwrap", "SteamWrap_GetImageSize", 1);
 			SteamWrap_GetImageBytes = cpp.Lib.load("steamwrap", "SteamWrap_GetImageBytes", 1);
 			SteamWrap_SetStat = cpp.Lib.load("steamwrap", "SteamWrap_SetStat", 2);
@@ -370,6 +373,14 @@ class Steam {
 		if (!active)
 			return 'Fail';
 		var result = SteamWrap_GetLargeFriendAvatar(imageKey);
+
+		return result;
+	}
+
+	public static function requestUserInfo(steamID:String):String {
+		if (!active)
+			return 'Steam not active';
+		var result = SteamWrap_RequestUserInformation(steamID);
 
 		return result;
 	}
@@ -838,6 +849,15 @@ class Steam {
 					whenAvatarImageLoaded.get(data)(data);
 					whenAvatarImageLoaded.remove(data);
 				}
+
+			case "PersonaStateChange":
+				var id = data.split('11565')[0];
+				if (whenPersonaStateChange.exists(id)) {
+					var callback:String->Void = whenPersonaStateChange.get(id);
+					whenPersonaStateChange.remove(id);
+					if (callback != null)
+						callback(data.split('11565')[1]);
+				}
 		}
 	}
 
@@ -866,6 +886,7 @@ class Steam {
 	private static var SteamWrap_GetSmallFriendAvatar:String->String;
 	private static var SteamWrap_GetMediumFriendAvatar:String->String;
 	private static var SteamWrap_GetLargeFriendAvatar:String->String;
+	private static var SteamWrap_RequestUserInformation:String->String;
 	private static var SteamWrap_GetImageSize:Int->Int;
 	private static var SteamWrap_GetImageBytes:String->OneOfTwo<Int, BytesData>;
 	private static var SteamWrap_ClearAchievement:Dynamic;

@@ -184,6 +184,7 @@ static const char *kEventTypeOnLobbyJoinRequested = "LobbyJoinRequested";
 static const char *kEventTypeOnLobbyCreated = "LobbyCreated";
 static const char *kEventTypeOnLobbyListReceived = "LobbyListReceived";
 static const char *kEventTypeOnAvatarImageLoaded = "AvatarImageLoaded";
+static const char *kEventTypeOnPersonaStateChange = "PersonaStateChange";
 
 // A simple data structure that holds on to the native 64-bit handles and maps them to regular ints.
 // This is because it is cumbersome to pass back 64-bit values over CFFI, and strictly speaking, the haxe
@@ -306,7 +307,8 @@ public:
 						m_CallbackDownloadItemResult(this, &CallbackHandler::OnDownloadItem),
 						m_CallbackItemInstalled(this, &CallbackHandler::OnItemInstalled),
 						m_CallbackLobbyUpdate(this, &CallbackHandler::OnLobbyUpdate),
-						m_CallbackAvatarImageLoaded(this, &CallbackHandler::OnAvatarImageLoaded)
+						m_CallbackAvatarImageLoaded(this, &CallbackHandler::OnAvatarImageLoaded),
+						m_CallbackPersonaStateChange(this, &CallbackHandler::OnPersonaStateChange)
 	{
 	}
 
@@ -319,6 +321,7 @@ public:
 	STEAM_CALLBACK(CallbackHandler, OnLobbyJoinRequested, GameLobbyJoinRequested_t);
 	STEAM_CALLBACK(CallbackHandler, OnLobbyUpdate, LobbyChatUpdate_t, m_CallbackLobbyUpdate);
 	STEAM_CALLBACK(CallbackHandler, OnAvatarImageLoaded, AvatarImageLoaded_t, m_CallbackAvatarImageLoaded);
+	STEAM_CALLBACK(CallbackHandler, OnPersonaStateChange, PersonaStateChange_t, m_CallbackPersonaStateChange);
 
 	void FindLeaderboard(const char *name);
 	void OnLeaderboardFound(LeaderboardFindResult_t *pResult, bool bIOFailure);
@@ -398,6 +401,16 @@ void CallbackHandler::OnAvatarImageLoaded(AvatarImageLoaded_t *pCallback)
 	returnData << pCallback->m_steamID.ConvertToUint64();
 
 	SendEvent(Event(kEventTypeOnAvatarImageLoaded, true, returnData.str().c_str()));
+}
+
+void CallbackHandler::OnPersonaStateChange(PersonaStateChange_t *pCallback)
+{
+	std::ostringstream returnData;
+	returnData << pCallback->m_ulSteamID;
+	returnData << '--';
+	returnData << pCallback->m_nChangeFlags;
+
+	SendEvent(Event(kEventTypeOnPersonaStateChange, true, returnData.str().c_str()));
 }
 
 void CallbackHandler::OnUserStatsReceived(UserStatsReceived_t *pCallback)
@@ -1810,6 +1823,28 @@ extern "C"
 		return alloc_string(returnData.str().c_str());
 	}
 	DEFINE_PRIM(SteamWrap_GetLargeFriendAvatar, 1);
+
+	//-----------------------------------------------------------------------------------------------------------
+	value SteamWrap_RequestUserInformation(value steamID)
+	{
+		if (!CheckInit() || !val_is_string(steamID))
+			return alloc_string("Failed");
+
+		// Create uint64 from the string.
+		uint64 steamHandle;
+		std::istringstream handleStream(val_string(steamID));
+		if (!(handleStream >> steamHandle))
+		{
+			return alloc_string("Failed to convert string to uint64");
+		}
+
+		CSteamID userId = CSteamID(steamHandle);
+		if (SteamFriends()->RequestUserInformation(userId, false))
+			return alloc_string("Requesting data...");
+
+		return alloc_string("Data available");
+	}
+	DEFINE_PRIM(SteamWrap_RequestUserInformation, 1);
 
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_RestartAppIfNecessary(value appId)
