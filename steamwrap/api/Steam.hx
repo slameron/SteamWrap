@@ -851,12 +851,12 @@ class Steam {
 				}
 
 			case "PersonaStateChange":
-				var id = data.split('11565')[0];
+				var id = data.split('--')[0];
 				if (whenPersonaStateChange.exists(id)) {
 					var callback:String->Void = whenPersonaStateChange.get(id);
 					whenPersonaStateChange.remove(id);
 					if (callback != null)
-						callback(data.split('11565')[1]);
+						callback(data.split('--')[1]);
 				}
 		}
 	}

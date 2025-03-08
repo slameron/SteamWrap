@@ -407,7 +407,7 @@ void CallbackHandler::OnPersonaStateChange(PersonaStateChange_t *pCallback)
 {
 	std::ostringstream returnData;
 	returnData << pCallback->m_ulSteamID;
-	returnData << '--';
+	returnData << "--";
 	returnData << pCallback->m_nChangeFlags;
 
 	SendEvent(Event(kEventTypeOnPersonaStateChange, true, returnData.str().c_str()));
