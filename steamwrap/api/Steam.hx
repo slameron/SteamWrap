@@ -165,7 +165,7 @@ class Steam {
 			SteamWrap_GetSmallFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetSmallFriendAvatar", 1);
 			SteamWrap_GetMediumFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetMediumFriendAvatar", 1);
 			SteamWrap_GetLargeFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetLargeFriendAvatar", 1);
-			SteamWrap_RequestUserInformation = cpp.Lib.load("steamwrap", "SteamWrap_RequestUserInformation", 1);
+			SteamWrap_RequestUserInformation = cpp.Lib.load("steamwrap", "SteamWrap_RequestUserInformation", 2);
 			SteamWrap_GetImageSize = cpp.Lib.load("steamwrap", "SteamWrap_GetImageSize", 1);
 			SteamWrap_GetImageBytes = cpp.Lib.load("steamwrap", "SteamWrap_GetImageBytes", 1);
 			SteamWrap_SetStat = cpp.Lib.load("steamwrap", "SteamWrap_SetStat", 2);
@@ -377,10 +377,16 @@ class Steam {
 		return result;
 	}
 
-	public static function requestUserInfo(steamID:String):String {
+	/**
+	 * Requests user information for specified `steamID`.
+	 * @param steamID user ID of the person you want to request information for.
+	 * @param requireNameOnly set to true if you only need the name, false if you want the avatar as well.
+	 * @return `'Requesting Data...'` if it needs to load the avatar, otherwise `'Data available'`
+	 */
+	public static function requestUserInfo(steamID:String, requireNameOnly:Bool):String {
 		if (!active)
 			return 'Steam not active';
-		var result = SteamWrap_RequestUserInformation(steamID);
+		var result = SteamWrap_RequestUserInformation(steamID, requireNameOnly);
 
 		return result;
 	}
@@ -886,7 +892,7 @@ class Steam {
 	private static var SteamWrap_GetSmallFriendAvatar:String->String;
 	private static var SteamWrap_GetMediumFriendAvatar:String->String;
 	private static var SteamWrap_GetLargeFriendAvatar:String->String;
-	private static var SteamWrap_RequestUserInformation:String->String;
+	private static var SteamWrap_RequestUserInformation:String->Bool->String;
 	private static var SteamWrap_GetImageSize:Int->Int;
 	private static var SteamWrap_GetImageBytes:String->OneOfTwo<Int, BytesData>;
 	private static var SteamWrap_ClearAchievement:Dynamic;

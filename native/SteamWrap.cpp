@@ -1831,9 +1831,9 @@ extern "C"
 	DEFINE_PRIM(SteamWrap_GetLargeFriendAvatar, 1);
 
 	//-----------------------------------------------------------------------------------------------------------
-	value SteamWrap_RequestUserInformation(value steamID)
+	value SteamWrap_RequestUserInformation(value steamID, value requireNameOnly)
 	{
-		if (!CheckInit() || !val_is_string(steamID))
+		if (!CheckInit() || !val_is_string(steamID) || !val_is_bool(requireNameOnly))
 			return alloc_string("Failed");
 
 		// Create uint64 from the string.
@@ -1845,12 +1845,12 @@ extern "C"
 		}
 
 		CSteamID userId = CSteamID(steamHandle);
-		if (SteamFriends()->RequestUserInformation(userId, false))
+		if (SteamFriends()->RequestUserInformation(userId, val_bool(requireNameOnly)))
 			return alloc_string("Requesting data...");
 
 		return alloc_string("Data available");
 	}
-	DEFINE_PRIM(SteamWrap_RequestUserInformation, 1);
+	DEFINE_PRIM(SteamWrap_RequestUserInformation, 2);
 
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_RestartAppIfNecessary(value appId)
@@ -2226,7 +2226,7 @@ extern "C"
 
 		std::ostringstream data;
 
-		data << "publishedFileID:" << d->m_nPublishedFileId << ",";
+		data << "publishedFileId:" << d->m_nPublishedFileId << ",";
 		data << "result:" << d->m_eResult << ",";
 		data << "fileType:" << d->m_eFileType << ",";
 		data << "creatorAppID:" << d->m_nCreatorAppID << ",";
