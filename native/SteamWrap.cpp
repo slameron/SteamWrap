@@ -1145,12 +1145,18 @@ extern "C"
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_StartUpdateUGCItem(value id, value itemID)
 	{
-		if (!val_is_int(id) || !val_is_int(itemID) || !CheckInit())
+		if (!val_is_int(id) || !val_is_string(itemID) || !CheckInit())
 		{
 			return alloc_string("0");
 		}
-
-		UGCUpdateHandle_t ugcUpdateHandle = SteamUGC()->StartItemUpdate(val_int(id), val_int(itemID));
+		// Create uint64 from the string.
+		uint64 itemID64;
+		std::istringstream handleStream(val_string(itemID));
+		if (!(handleStream >> itemID64))
+		{
+			return alloc_string("0");
+		}
+		UGCUpdateHandle_t ugcUpdateHandle = SteamUGC()->StartItemUpdate(val_int(id), itemID64);
 
 		// Change the uint64 to string, easier to handle between haxe & cpp.
 		std::ostringstream updateHandleStream;
