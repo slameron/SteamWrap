@@ -518,7 +518,7 @@ void CallbackHandler::OnUGCItemCreated(CreateItemResult_t *pCallback, bool bIOFa
 	if (pCallback->m_bUserNeedsToAcceptWorkshopLegalAgreement)
 	{
 		std::ostringstream urlStream;
-		urlStream << "steam://url/CommunityFilePage/" << m_ugcFileID;
+		urlStream << "https://steamcommunity.com/sharedfiles/workshoplegalagreement";
 
 		// TODO: Separate this to it's own call through wrapper.
 		SteamFriends()->ActivateGameOverlayToWebPage(urlStream.str().c_str());
