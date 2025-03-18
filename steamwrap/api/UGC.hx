@@ -182,13 +182,18 @@ class UGC {
 
 	/*
 	 * Query UGC associated with a user. Creator app id or consumer app id must be valid and be set to the current running app. Page should start at 1.
+	 * @param steamID the Steam ID of the user you want to query. Not the account ID, the function will grab that from the steamID
+	 * @param page The page of items you want to request. 50 items per page, start at page 1.
+	 * @param listType The type of user items you want returned such as published or subscribed to
+	 * @param matchingUGCType The type of items you want
 	 */
-	/*
-		public function createQueryUserUGCRequest(accountID:String, listType, matchingUGCType, sortOrder, creatorAppID:String, consumerAppID:String, page:Int)
-		{
-			
-		}
-	 */
+	public function createQueryUserUGCRequest(steamID:String, page:Int, listType:EUserUGCList, matchingUGCType:EUGCMatchingUGCType,
+			sortOrder:EUserUGCListSortOrder, ?creatorAppID:Int, ?consumerAppID:Int):String {
+		var result = SteamWrap_CreateQueryUserUGCRequest(steamID, listType, matchingUGCType, sortOrder, /*creatorAppID ?? appId, consumerAppID ?? appId,*/
+			page);
+		return result;
+	}
+
 	/**
 	 * Query for all matching UGC. Creator app id or consumer app id must be valid and be set to the current running app. unPage should start at 1.
 	 * @param	queryType
@@ -286,6 +291,7 @@ class UGC {
 	private var SteamWrap_GetSubscribedItems:Dynamic;
 	private var SteamWrap_GetItemDownloadInfo:Dynamic;
 	private var SteamWrap_GetItemInstallInfo:Dynamic;
+	private var SteamWrap_CreateQueryUserUGCRequest:Dynamic;
 	private var SteamWrap_CreateQueryAllUGCRequest:Dynamic;
 	private var SteamWrap_CreateQueryUGCDetailsRequest:Dynamic;
 	private var SteamWrap_GetQueryUGCResult:Dynamic;
@@ -330,7 +336,7 @@ class UGC {
 			SteamWrap_GetSubscribedItems = cpp.Lib.load("steamwrap", "SteamWrap_GetSubscribedItems", 0);
 			SteamWrap_GetItemDownloadInfo = cpp.Lib.load("steamwrap", "SteamWrap_GetItemDownloadInfo", 1);
 			SteamWrap_GetItemInstallInfo = cpp.Lib.load("steamwrap", "SteamWrap_GetItemInstallInfo", 2);
-
+			SteamWrap_CreateQueryUserUGCRequest = cpp.Lib.load("steamwrap", "SteamWrap_CreateQueryUserUGCRequest", 5);
 			SteamWrap_CreateQueryAllUGCRequest = cpp.Lib.load("steamwrap", "SteamWrap_CreateQueryAllUGCRequest", 5);
 			SteamWrap_CreateQueryUGCDetailsRequest = cpp.Lib.load("steamwrap", "SteamWrap_CreateQueryUGCDetailsRequest", 1);
 			SteamWrap_GetQueryUGCResult = cpp.Lib.load("steamwrap", "SteamWrap_GetQueryUGCResult", 2);

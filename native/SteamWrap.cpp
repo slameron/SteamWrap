@@ -2046,34 +2046,50 @@ extern "C"
 	}
 	DEFINE_PRIM(SteamWrap_GetItemInstallInfo, 2);
 
-	/*
-	value SteamWrap_CreateQueryUserUGCRequest(value accountID, value listType, value matchingUGCType, value sortOrder, value creatorAppID, value consumerAppID, value page)
+	value SteamWrap_CreateQueryUserUGCRequest(value steamID, value listType, value matchingUGCType, value sortOrder, /*value creatorAppID, value consumerAppID,*/ value page)
 	{
-		if (!CheckInit()) return alloc_string("");
-		if (!val_is_int(accountID)) return alloc_string("");
-		if (!val_is_int(listType)) return alloc_string("");
-		if (!val_is_int(matchingUGCType)) return alloc_string("");
-		if (!val_is_int(sortOrder)) return alloc_string("");
-		if (!val_is_int(creatorAppID)) return alloc_string("");
-		if (!val_is_int(consumerAppID)) return alloc_string("");
-		if (!val_is_int(page)) return alloc_string("");
+		if (!CheckInit())
+			return alloc_string("");
+		if (!val_is_string(steamID))
+			return alloc_string("");
+		if (!val_is_int(listType))
+			return alloc_string("");
+		if (!val_is_int(matchingUGCType))
+			return alloc_string("");
+		if (!val_is_int(sortOrder))
+			return alloc_string("");
+		/*if (!val_is_int(creatorAppID))
+			return alloc_string("");
+		if (!val_is_int(consumerAppID))
+			return alloc_string("");*/
+		if (!val_is_int(page))
+			return alloc_string("");
 
-		AccountID_t unAccountID = val_int(accountID);
-		EUserUGCList eListType = val_int(listType);
-		EUGCMatchingUGCType eMatchingUGCType = val_int(matchingUGCType);
-		EUserUGCListSortOrder eSortOrder = val_int(sortOrder);
-		AppID_t nCreatorAppID = val_int(creatorAppID);
-		AppId_t nConsumerAppID = val_int(consumerAppID);
-		uint32 page = val_int(page);
+		// Create uint64 from the string.
+		uint64 steamHandle;
+		std::istringstream handleStream(val_string(steamID));
+		if (!(handleStream >> steamHandle))
+		{
+			return alloc_string("");
+		}
 
-		UGCQueryHandle_t result = SteamUGC()->SteamWrap_CreateQueryUserUGCRequest(unAccountID, eListType, eMatchingUGCType, eSortOrder, nCreatorAppID, nConsumerAppId, unPage);
+		CSteamID userId = CSteamID(steamHandle);
 
-		std:ostringstream data;
+		AccountID_t unAccountID = userId.GetAccountID();
+		EUserUGCList eListType = (EUserUGCList)val_int(listType);
+		EUGCMatchingUGCType eMatchingUGCType = (EUGCMatchingUGCType)val_int(matchingUGCType);
+		EUserUGCListSortOrder eSortOrder = (EUserUGCListSortOrder)val_int(sortOrder);
+		AppId_t nCreatorAppID = SteamUtils()->GetAppID();  // val_int(creatorAppID);
+		AppId_t nConsumerAppID = SteamUtils()->GetAppID(); // val_int(consumerAppID);
+		uint32 unPage = val_int(page);
+
+		UGCQueryHandle_t result = SteamUGC()->CreateQueryUserUGCRequest(unAccountID, eListType, eMatchingUGCType, eSortOrder, nCreatorAppID, nConsumerAppID, unPage);
+
+		std::ostringstream data;
 		data << result;
 		return alloc_string(data.str().c_str());
 	}
-	DEFINE_PRIM(SteamWrap_CreateQueryUserUGCRequest, 7);
-	*/
+	DEFINE_PRIM(SteamWrap_CreateQueryUserUGCRequest, 5);
 
 	value SteamWrap_CreateQueryAllUGCRequest(value queryType, value matchingUGCType, value creatorAppID, value consumerAppID, value page)
 	{
