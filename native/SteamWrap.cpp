@@ -475,6 +475,17 @@ void CallbackHandler::OnItemUpdateSubmitted(SubmitItemUpdateResult_t *pCallback,
 	}
 	else
 	{
+		SendEvent(Event(kEventTypeUGCLegalAgreement, !pCallback->m_bUserNeedsToAcceptWorkshopLegalAgreement));
+
+		if (pCallback->m_bUserNeedsToAcceptWorkshopLegalAgreement)
+		{
+			std::ostringstream urlStream;
+			urlStream << "https://steamcommunity.com/sharedfiles/workshoplegalagreement";
+
+			// TODO: Separate this to it's own call through wrapper.
+			SteamFriends()->ActivateGameOverlayToWebPage(urlStream.str().c_str());
+		}
+
 		SendEvent(Event(kEventTypeOnItemUpdateSubmitted, true));
 	}
 }
