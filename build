@@ -16,6 +16,13 @@ rm -rf obj
 echo Building for 64 bits
 haxelib run hxcpp Build.xml -DHXCPP_M64
 
+
+# removes old builds, just to be safe
+rm -rf obj
+
+echo Building for ARM
+haxelib run hxcpp Build.xml -DHXCPP_ARM64
+
 # build the example program "Test"
 
 # cd ..
