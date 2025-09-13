@@ -185,6 +185,8 @@ static const char *kEventTypeOnLobbyCreated = "LobbyCreated";
 static const char *kEventTypeOnLobbyListReceived = "LobbyListReceived";
 static const char *kEventTypeOnAvatarImageLoaded = "AvatarImageLoaded";
 static const char *kEventTypeOnPersonaStateChange = "PersonaStateChange";
+static const char *kEventTypeOnControllerConnected = "ControllerConnected";
+static const char *kEventTypeOnControllerDisconnected = "ControllerDisconnected";
 
 // A simple data structure that holds on to the native 64-bit handles and maps them to regular ints.
 // This is because it is cumbersome to pass back 64-bit values over CFFI, and strictly speaking, the haxe
@@ -308,7 +310,9 @@ public:
 						m_CallbackItemInstalled(this, &CallbackHandler::OnItemInstalled),
 						m_CallbackLobbyUpdate(this, &CallbackHandler::OnLobbyUpdate),
 						m_CallbackAvatarImageLoaded(this, &CallbackHandler::OnAvatarImageLoaded),
-						m_CallbackPersonaStateChange(this, &CallbackHandler::OnPersonaStateChange)
+						m_CallbackPersonaStateChange(this, &CallbackHandler::OnPersonaStateChange),
+						m_CallbackControllerConnected(this, &CallbackHandler::OnControllerConnected),
+						m_CallbackControllerDisconnected(this, &CallbackHandler::OnControllerDisconnected)
 	{
 	}
 
@@ -322,6 +326,8 @@ public:
 	STEAM_CALLBACK(CallbackHandler, OnLobbyUpdate, LobbyChatUpdate_t, m_CallbackLobbyUpdate);
 	STEAM_CALLBACK(CallbackHandler, OnAvatarImageLoaded, AvatarImageLoaded_t, m_CallbackAvatarImageLoaded);
 	STEAM_CALLBACK(CallbackHandler, OnPersonaStateChange, PersonaStateChange_t, m_CallbackPersonaStateChange);
+	STEAM_CALLBACK(CallbackHandler, OnControllerConnected, SteamInputDeviceConnected_t, m_CallbackControllerConnected);
+	STEAM_CALLBACK(CallbackHandler, OnControllerDisconnected, SteamInputDeviceDisconnected_t, m_CallbackControllerDisconnected);
 
 	void FindLeaderboard(const char *name);
 	void OnLeaderboardFound(LeaderboardFindResult_t *pResult, bool bIOFailure);
@@ -3060,10 +3066,11 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 		if (!SteamInput())
 			return alloc_bool(false);
 
-		bool result = SteamInput()->Init(true);
+		bool result = SteamInput()->Init(false);
 
 		if (result)
 		{
+			SteamInput()->EnableDeviceCallbacks();
 			mapControllers.init();
 
 			analogActionData.eMode = k_EInputSourceMode_None;
@@ -3075,6 +3082,20 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 		return alloc_bool(result);
 	}
 	DEFINE_PRIM(SteamWrap_InitControllers, 0);
+
+	//-----------------------------------------------------------------------------------------------------------
+
+	void CallbackHandler::OnControllerConnected(SteamInputDeviceConnected_t *pResult)
+	{
+		SendEvent(Event(kEventTypeOnControllerConnected, true, alloc_int(pResult->m_ulConnectedDeviceHandle)));
+	}
+
+	//-----------------------------------------------------------------------------------------------------------
+
+	void CallbackHandler::OnControllerDisconnected(SteamInputDeviceDisconnected_t *pResult)
+	{
+		SendEvent(Event(kEventTypeOnControllerDisconnected, true, alloc_int(pResult->m_ulDisconnectedDeviceHandle)));
+	}
 
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_ShutdownControllers()

@@ -13,6 +13,16 @@ import steamwrap.helpers.MacroHelper;
 @:allow(steamwrap.api.Steam)
 class Controller {
 	/**
+	 * Callback fired when a controller is connected
+	 */
+	public var whenControllerConnected:String->Void;
+
+	/**
+	 * Callback fired when a controller is disconnected
+	 */
+	public var whenControllerDisconnected:String->Void;
+
+	/**
 	 * The maximum number of controllers steam can recognize. Use this for array upper bounds.
 	 */
 	public var MAX_CONTROLLERS(get, null):Int;

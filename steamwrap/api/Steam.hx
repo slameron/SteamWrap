@@ -864,6 +864,16 @@ class Steam {
 					if (callback != null)
 						callback(data.split('--')[1]);
 				}
+
+			case "ControllerConnected":
+				if (controllers.whenControllerConnected != null) {
+					controllers.whenControllerConnected(obj);
+				}
+
+			case "ControllerDisconnected":
+				if (controllers.whenControllerDisconnected != null) {
+					controllers.whenControllerDisconnected(obj);
+				}
 		}
 	}
 
