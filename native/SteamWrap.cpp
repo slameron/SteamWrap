@@ -3087,14 +3087,15 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 
 	void CallbackHandler::OnControllerConnected(SteamInputDeviceConnected_t *pResult)
 	{
-		SendEvent(Event(kEventTypeOnControllerConnected, true, alloc_int(pResult->m_ulConnectedDeviceHandle)));
+
+		SendEvent(Event(kEventTypeOnControllerConnected, true, alloc_int(mapControllers.add(pResult->m_ulConnectedDeviceHandle))));
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
 
 	void CallbackHandler::OnControllerDisconnected(SteamInputDeviceDisconnected_t *pResult)
 	{
-		SendEvent(Event(kEventTypeOnControllerDisconnected, true, alloc_int(pResult->m_ulDisconnectedDeviceHandle)));
+		SendEvent(Event(kEventTypeOnControllerDisconnected, true, alloc_int(mapControllers.find(pResult->m_ulDisconnectedDeviceHandle))));
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
@@ -3174,7 +3175,7 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 			if (index < 0)
 			{
 				index = mapControllers.add(handles[i]);
-				index = handles[i];
+				// index = handles[i];
 			}
 
 			if (index != -1)
@@ -3190,6 +3191,24 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 		return alloc_string(returnData.str().c_str());
 	}
 	DEFINE_PRIM(SteamWrap_GetConnectedControllers, 0);
+
+	//-----------------------------------------------------------------------------------------------------------
+	/*value SteamWrap_GetGamepadIndexForController(value controller)
+	{
+		InputHandle_t handle;
+		std::istringstream handleStream(val_string(controller));
+		if (!(handleStream >> handle))
+		{
+			return alloc_int(-4);
+		}
+
+		SteamWrap_GetConnectedControllers();
+
+		int inputHandle = mapControllers.find(handle);
+
+		return alloc_int(inputHandle);
+	}
+	DEFINE_PRIM(SteamWrap_GetGamepadIndexForController, 1);*/
 
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_GetControllerForGamepadIndex(value index)
@@ -3316,7 +3335,7 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 	int SteamWrap_GetActionSetHandle(const char *actionSetName)
 	{
 
-		ControllerActionSetHandle_t handle = SteamInput()->GetActionSetHandle(actionSetName);
+		InputActionSetHandle_t handle = SteamInput()->GetActionSetHandle(actionSetName);
 		return handle;
 	}
 	DEFINE_PRIME1(SteamWrap_GetActionSetHandle);

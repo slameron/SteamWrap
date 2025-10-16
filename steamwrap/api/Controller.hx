@@ -424,7 +424,9 @@ class Controller {
 	}
 
 	public function getGamepadIndexForController(controller:Int):Int {
-		// TODO
+		// return SteamWrap_GetGamepadIndexForController(controller);
+
+		// handles are too long you should have the index
 		return -1;
 	}
 
@@ -502,6 +504,7 @@ class Controller {
 	private var SteamWrap_GetConnectedControllers:Dynamic;
 	private var SteamWrap_GetInputTypeForHandle:Dynamic;
 	private var SteamWrap_GetControllerForGamepadIndex:Dynamic;
+	// private var SteamWrap_GetGamepadIndexForController:Dynamic;
 	private var SteamWrap_GetInputTypeForControllerIndex:Dynamic;
 	private var SteamWrap_GetDigitalActionOrigins:Dynamic;
 	private var SteamWrap_GetEnteredGamepadTextInput:Dynamic;
@@ -562,6 +565,7 @@ class Controller {
 			// Old-school CFFI calls:
 			SteamWrap_GetConnectedControllers = cpp.Lib.load("steamwrap", "SteamWrap_GetConnectedControllers", 0);
 			SteamWrap_GetInputTypeForHandle = cpp.Lib.load("steamwrap", "SteamWrap_GetInputTypeForHandle", 1);
+			// SteamWrap_GetGamepadIndexForController = cpp.Lib.load("steamwrap", "SteamWrap_GetGamepadIndexForController", 1);
 			SteamWrap_GetControllerForGamepadIndex = cpp.Lib.load("steamwrap", "SteamWrap_GetControllerForGamepadIndex", 1);
 			SteamWrap_GetInputTypeForControllerIndex = cpp.Lib.load("steamwrap", "SteamWrap_GetInputTypeForControllerIndex", 1);
 			SteamWrap_GetDigitalActionOrigins = cpp.Lib.load("steamwrap", "SteamWrap_GetDigitalActionOrigins", 3);
