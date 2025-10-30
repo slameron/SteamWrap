@@ -3219,9 +3219,18 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 		{
 			return alloc_int(-4);
 		}
-		InputHandle_t inputHandle = SteamInput()->GetControllerForGamepadIndex(handle);
 
-		return alloc_int(inputHandle);
+		std::ostringstream returnData;
+
+		SteamInput()->RunFrame();
+
+		InputHandle_t handles[STEAM_CONTROLLER_MAX_COUNT];
+		SteamInput()->GetConnectedControllers(handles);
+		InputHandle_t inputHandle = handles[val_int(index)];
+
+		returnData << inputHandle;
+
+		return alloc_string(returnData.str().c_str());
 	}
 	DEFINE_PRIM(SteamWrap_GetControllerForGamepadIndex, 1);
 
@@ -3282,13 +3291,10 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_GetInputTypeForControllerIndex(value index)
 	{
-		int handle;
-		std::istringstream handleStream(val_string(index));
-		if (!(handleStream >> handle))
-		{
-			return alloc_int(-4);
-		}
-		InputHandle_t inputHandle = SteamInput()->GetControllerForGamepadIndex(handle);
+		if (!val_is_int(index))
+			return alloc_string("Xbox Controller");
+
+		InputHandle_t inputHandle = mapControllers.get(val_int(index));
 
 		std::ostringstream returnData;
 

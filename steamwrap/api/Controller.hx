@@ -430,7 +430,7 @@ class Controller {
 		return -1;
 	}
 
-	public function getControllerForGamepadIndex(index:Int):Int {
+	public function getControllerForGamepadIndex(index:Int):String {
 		return SteamWrap_GetControllerForGamepadIndex(index);
 	}
 
