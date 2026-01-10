@@ -47,16 +47,20 @@ import steamwrap.api.Steam;
 
 				var sequence = json.sequence;
 
+				if (isOldPacket(src, type, sequence))
+					return;
+
 				var data:Dynamic = {
 					sender: {id: src, name: Steam.getFriendPersonaName(src)},
 					data: json.data
 				};
 
-				if (isOldPacket(src, type, sequence))
-					return;
-
 				if (events.exists(type))
 					events.get(type)(data);
+
+				data = null;
+				json = null;
+				str = null;
 			}
 		}
 	}

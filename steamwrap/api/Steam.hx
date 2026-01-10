@@ -165,6 +165,11 @@ class Steam {
 			SteamWrap_GetSmallFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetSmallFriendAvatar", 1);
 			SteamWrap_GetMediumFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetMediumFriendAvatar", 1);
 			SteamWrap_GetLargeFriendAvatar = cpp.Lib.load("steamwrap", "SteamWrap_GetLargeFriendAvatar", 1);
+			SteamWrap_StartVoiceRecording = cpp.Lib.load("steamwrap", "SteamWrap_StartVoiceRecording", 0);
+			SteamWrap_StopVoiceRecording = cpp.Lib.load("steamwrap", "SteamWrap_StopVoiceRecording", 0);
+			SteamWrap_GetAvailableVoice = cpp.Lib.load("steamwrap", "SteamWrap_GetAvailableVoice", 0);
+			SteamWrap_GetVoice = cpp.Lib.load("steamwrap", "SteamWrap_GetVoice", 0);
+			SteamWrap_DecompressVoice = cpp.Lib.load("steamwrap", "SteamWrap_DecompressVoice", 1);
 			SteamWrap_RequestUserInformation = cpp.Lib.load("steamwrap", "SteamWrap_RequestUserInformation", 2);
 			SteamWrap_GetImageSize = cpp.Lib.load("steamwrap", "SteamWrap_GetImageSize", 1);
 			SteamWrap_GetImageBytes = cpp.Lib.load("steamwrap", "SteamWrap_GetImageBytes", 1);
@@ -374,6 +379,44 @@ class Steam {
 			return 'Fail';
 		var result = SteamWrap_GetLargeFriendAvatar(imageKey);
 
+		return result;
+	}
+
+	// Steam Voice
+
+	public static function startVoiceRecording() {
+		var result = SteamWrap_StartVoiceRecording();
+
+		if (result)
+			trace('Successfully started recording voice');
+		else
+			trace('Failed to start recording voice');
+	}
+
+	public static function stopVoiceRecording() {
+		var result = SteamWrap_StopVoiceRecording();
+
+		if (result)
+			trace('Successfully stopped recording voice');
+		else
+			trace('Failed to stop recording voice');
+	}
+
+	public static function getAvailableVoice() {
+		var result = SteamWrap_GetAvailableVoice();
+		// trace('getAvailableVoice returned $result');
+		return result;
+	}
+
+	public static function getVoice() {
+		var result = SteamWrap_GetVoice();
+		// trace('getVoice returned $result');
+		return result;
+	}
+
+	public static function decompressVoice(voiceBytes:Bytes) {
+		var result = SteamWrap_DecompressVoice(voiceBytes);
+		// trace('DecompressVoice returned $result');
 		return result;
 	}
 
@@ -902,6 +945,11 @@ class Steam {
 	private static var SteamWrap_GetSmallFriendAvatar:String->String;
 	private static var SteamWrap_GetMediumFriendAvatar:String->String;
 	private static var SteamWrap_GetLargeFriendAvatar:String->String;
+	private static var SteamWrap_StartVoiceRecording:Void->Bool;
+	private static var SteamWrap_StopVoiceRecording:Void->Bool;
+	private static var SteamWrap_GetAvailableVoice:Void->Int;
+	private static var SteamWrap_GetVoice:Void->BytesData;
+	private static var SteamWrap_DecompressVoice:Bytes->BytesData;
 	private static var SteamWrap_RequestUserInformation:String->Bool->String;
 	private static var SteamWrap_GetImageSize:Int->Int;
 	private static var SteamWrap_GetImageBytes:String->OneOfTwo<Int, BytesData>;

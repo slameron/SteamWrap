@@ -2808,6 +2808,117 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 
 #pragma endregion
 
+#pragma region Steam Voice
+
+	value SteamWrap_StartVoiceRecording()
+	{
+		if (CheckInit() && SteamUser())
+		{
+			SteamUser()->StartVoiceRecording();
+			return alloc_bool(true);
+		}
+		else
+			return alloc_bool(false);
+	}
+	DEFINE_PRIM(SteamWrap_StartVoiceRecording, 0);
+
+	value SteamWrap_StopVoiceRecording()
+	{
+		if (CheckInit() && SteamUser())
+		{
+			SteamUser()->StopVoiceRecording();
+			return alloc_bool(true);
+		}
+		else
+			return alloc_bool(false);
+	}
+	DEFINE_PRIM(SteamWrap_StopVoiceRecording, 0);
+
+	value SteamWrap_GetAvailableVoice()
+	{
+		if (CheckInit() && SteamUser())
+		{
+			uint32 pcbCompressed = 0;
+			EVoiceResult result = SteamUser()->GetAvailableVoice(&pcbCompressed);
+
+			if (result == k_EVoiceResultNotRecording)
+				return alloc_int(-1);
+
+			// std::cout << result << std::endl;
+			// std::cout << pcbCompressed << " bytes available" << std::endl;
+
+			return alloc_int(pcbCompressed);
+		}
+		else
+			return alloc_int(0);
+	}
+	DEFINE_PRIM(SteamWrap_GetAvailableVoice, 0);
+
+	value SteamWrap_GetVoice()
+	{
+		if (CheckInit() && SteamUser())
+		{
+			uint32 size = 0;
+			EVoiceResult available = SteamUser()->GetAvailableVoice(&size);
+			if (available != k_EVoiceResultOK || size == 0)
+			{
+				return alloc_bool(false);
+			}
+
+			std::vector<unsigned char> destBuffer(size);
+			uint32 bytesWritten = 0;
+
+			EVoiceResult result = SteamUser()->GetVoice(true, destBuffer.data(), size, &bytesWritten);
+
+			if (result != k_EVoiceResultOK || bytesWritten == 0)
+			{
+				return alloc_bool(false);
+			}
+
+			// std::cout << bytesWritten << " bytes written" << std::endl;
+			return bytes_to_hx(destBuffer.data(), bytesWritten);
+		}
+		else
+			return alloc_bool(false);
+	}
+	DEFINE_PRIM(SteamWrap_GetVoice, 0);
+
+	value SteamWrap_DecompressVoice(value haxeBytes)
+	{
+		if (CheckInit() && SteamUser())
+		{
+			CffiBytes bytes = getByteData(haxeBytes);
+			if (bytes.data == 0)
+				return alloc_bool(false);
+
+			uint32 bufferSize = 20000;
+			std::vector<unsigned char> uncompressedBuffer(bufferSize);
+			uint32 bytesWritten = 0;
+			uint32 sampleRate = 44100;
+
+			EVoiceResult voiceResult = SteamUser()->DecompressVoice(bytes.data, bytes.length, uncompressedBuffer.data(), bufferSize, &bytesWritten, sampleRate);
+
+			// std::cout << voiceResult << std::endl;
+
+			if (voiceResult == k_EVoiceResultBufferTooSmall)
+			{
+				// std::cout << "resizing buffer" << std::endl;
+				uncompressedBuffer.resize(bytesWritten);
+
+				voiceResult = SteamUser()->DecompressVoice(bytes.data, bytes.length, uncompressedBuffer.data(), bytesWritten, &bytesWritten, sampleRate);
+			}
+			if (voiceResult != k_EVoiceResultOK || bytesWritten == 0)
+				return alloc_bool(false);
+
+			return bytes_to_hx(uncompressedBuffer.data(), bytesWritten);
+		}
+		else
+			return alloc_bool(false);
+	}
+	DEFINE_PRIM(SteamWrap_DecompressVoice, 1);
+
+#pragma endregion
+
 #pragma region Lobby list
 	std::vector<CSteamID> SteamWrap_LobbyList;
 
