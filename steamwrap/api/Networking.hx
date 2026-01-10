@@ -12,7 +12,7 @@ import steamwrap.helpers.SteamBase;
 @:allow(steamwrap.api.Steam)
 class Networking extends SteamBase {
 	/**
-	 * Calls `sendPacket()` for every member in the current lobby.
+	 * Calls `sendMessage()` for every member in the current lobby.
 	 * @param eventType The name of the event. Make sure to add a callback for this event using `Steam.addPacketEvent()`.
 	 * @param data The data you want to send.
 	 * @param type The type of packet you're sending. Valid options are `UNRELIABLE`, `UNRELIABLE_NO_DELAY`, `RELIABLE`, and `RELIABLE_WITH_BUFFERING`
@@ -127,6 +127,7 @@ class Networking extends SteamBase {
 		* @return for (i in packetQueue)
 					sendPacket(i.id, i.packet.type, i.packet.data, i.packet.sendType)
 	 */
+	@:haxe.warning("-WDeprecated")
 	public function sendQueuedPackets()
 		for (i in packetQueue)
 			sendPacket(i.id, i.packet.type, i.packet.data, i.packet.sendType);

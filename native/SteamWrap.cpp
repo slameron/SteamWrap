@@ -2865,10 +2865,10 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 				return alloc_bool(false);
 			}
 
-			std::vector<unsigned char> destBuffer(size);
+			std::vector<unsigned char> destBuffer(1024); // destBuffer(size);
 			uint32 bytesWritten = 0;
 
-			EVoiceResult result = SteamUser()->GetVoice(true, destBuffer.data(), size, &bytesWritten);
+			EVoiceResult result = SteamUser()->GetVoice(true, destBuffer.data(), 1024 /*size*/, &bytesWritten);
 
 			if (result != k_EVoiceResultOK || bytesWritten == 0)
 			{
