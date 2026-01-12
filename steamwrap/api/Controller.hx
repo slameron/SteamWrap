@@ -1055,6 +1055,9 @@ enum abstract EInputActionOrigin(Int) {
 	}
 }
 
+// FlxAction Compatibility
+typedef EControllerActionOrigin = EInputActionOrigin;
+
 enum abstract ESteamControllerPad(Int) {
 	public var LEFT = 0;
 	public var RIGHT = 1;

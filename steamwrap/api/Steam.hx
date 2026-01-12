@@ -755,7 +755,7 @@ class Steam {
 		var type:String = Std.string(Reflect.field(e, "type"));
 		var success:Bool = (Std.int(Reflect.field(e, "success")) != 0);
 		var obj:Dynamic = Reflect.field(e, "data");
-		var data:String = Std.is(obj, String) ? Std.string(obj) : null;
+		var data:String = Std.isOfType(obj, String) ? Std.string(obj) : null;
 
 		customTrace("[STEAM] " + type + (success ? " SUCCESS" : " FAIL") + " (" + data + ")");
 
