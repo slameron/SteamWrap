@@ -909,13 +909,15 @@ class Steam {
 				}
 
 			case "ControllerConnected":
-				if (controllers.whenControllerConnected != null) {
-					controllers.whenControllerConnected(obj);
+				if (controllers.whenControllerConnected != null && controllers.whenControllerConnected.length > 0) {
+					for (func in controllers.whenControllerConnected)
+						func(obj);
 				}
 
 			case "ControllerDisconnected":
-				if (controllers.whenControllerDisconnected != null) {
-					controllers.whenControllerDisconnected(obj);
+				if (controllers.whenControllerDisconnected != null && controllers.whenControllerDisconnected.length > 0) {
+					for (func in controllers.whenControllerDisconnected)
+						func(obj);
 				}
 		}
 	}

@@ -15,12 +15,12 @@ class Controller {
 	/**
 	 * Callback fired when a controller is connected
 	 */
-	public var whenControllerConnected:String->Void;
+	public var whenControllerConnected:Array<String->Void> = [];
 
 	/**
 	 * Callback fired when a controller is disconnected
 	 */
-	public var whenControllerDisconnected:String->Void;
+	public var whenControllerDisconnected:Array<String->Void> = [];
 
 	/**
 	 * The maximum number of controllers steam can recognize. Use this for array upper bounds.
