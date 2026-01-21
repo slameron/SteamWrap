@@ -180,6 +180,7 @@ static const char *kEventTypeOnUGCQueryCompleted = "UGCQueryCompleted";
 static const char *kEventTypeOnLobbyJoined = "LobbyJoined";
 static const char *kEventTypeOnLobbyJoinFail = "LobbyJoinFailed";
 static const char *kEventTypeOnLobbyUpdate = "LobbyUpdate";
+static const char *kEventTypeOnLobbyDataUpdate = "LobbyDataUpdate";
 static const char *kEventTypeOnLobbyJoinRequested = "LobbyJoinRequested";
 static const char *kEventTypeOnLobbyCreated = "LobbyCreated";
 static const char *kEventTypeOnLobbyListReceived = "LobbyListReceived";
@@ -308,7 +309,7 @@ public:
 						m_CallbackGamepadTextInputDismissed(this, &CallbackHandler::OnGamepadTextInputDismissed),
 						m_CallbackDownloadItemResult(this, &CallbackHandler::OnDownloadItem),
 						m_CallbackItemInstalled(this, &CallbackHandler::OnItemInstalled),
-						m_CallbackLobbyUpdate(this, &CallbackHandler::OnLobbyUpdate),
+						m_CallbackLobbyUpdate(this, &CallbackHandler::OnLobbyUpdate), m_CallbackLobbyDataUpdate(this, &CallbackHandler::OnLobbyDataUpdate),
 						m_CallbackAvatarImageLoaded(this, &CallbackHandler::OnAvatarImageLoaded),
 						m_CallbackPersonaStateChange(this, &CallbackHandler::OnPersonaStateChange),
 						m_CallbackControllerConnected(this, &CallbackHandler::OnControllerConnected),
@@ -324,6 +325,7 @@ public:
 	STEAM_CALLBACK(CallbackHandler, OnItemInstalled, ItemInstalled_t, m_CallbackItemInstalled);
 	STEAM_CALLBACK(CallbackHandler, OnLobbyJoinRequested, GameLobbyJoinRequested_t);
 	STEAM_CALLBACK(CallbackHandler, OnLobbyUpdate, LobbyChatUpdate_t, m_CallbackLobbyUpdate);
+	STEAM_CALLBACK(CallbackHandler, OnLobbyDataUpdate, LobbyDataUpdate_t, m_CallbackLobbyDataUpdate);
 	STEAM_CALLBACK(CallbackHandler, OnAvatarImageLoaded, AvatarImageLoaded_t, m_CallbackAvatarImageLoaded);
 	STEAM_CALLBACK(CallbackHandler, OnPersonaStateChange, PersonaStateChange_t, m_CallbackPersonaStateChange);
 	STEAM_CALLBACK(CallbackHandler, OnControllerConnected, SteamInputDeviceConnected_t, m_CallbackControllerConnected);
@@ -2783,6 +2785,17 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 	}
 	DEFINE_PRIM(SteamWrap_LobbyGetData, 2);
 
+	value SteamWrap_RequestLobbyData(value lobby)
+	{
+		if (CheckInit() && val_is_string(lobby) && hx_to_id(lobby).IsValid())
+		{
+			return alloc_bool(SteamMatchmaking()->RequestLobbyData(hx_to_id(lobby)));
+		}
+		else
+			return alloc_bool(false);
+	}
+	DEFINE_PRIM(SteamWrap_RequestLobbyData, 1);
+
 	value SteamWrap_SetLobbyJoinable(value lobby, value joinable)
 	{
 		if (CheckInit() && val_is_string(lobby) && val_is_bool(joinable) && hx_to_id(lobby).IsValid())
@@ -3094,6 +3107,11 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 		alloc_field(obj, val_id("makingChangeID"), id_to_hx(pResult->m_ulSteamIDMakingChange));
 		alloc_field(obj, val_id("flags"), value(pResult->m_rgfChatMemberStateChange));
 		SendEvent(Event(kEventTypeOnLobbyUpdate, true, id_to_hx(pResult->m_ulSteamIDLobby)));
+	}
+
+	void CallbackHandler::OnLobbyDataUpdate(LobbyDataUpdate_t *pResult)
+	{
+		SendEvent(Event(kEventTypeOnLobbyDataUpdate, pResult->m_bSuccess, id_to_hx(pResult->m_ulSteamIDLobby)));
 	}
 
 	value SteamWrap_JoinLobby(value id)

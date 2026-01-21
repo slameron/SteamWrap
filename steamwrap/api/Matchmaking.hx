@@ -27,6 +27,11 @@ class Matchmaking extends SteamBase {
 	} -> Void = null;
 
 	/**
+	 * Called when lobby data is updated, typically when requesting data from a specific lobby.
+	 */
+	public var whenLobbyDataUpdate:Bool->String->Void = null;
+
+	/**
 	 * Called when the user accepts an invitation from an overlay.
 	 * You generally want to do joinLobby(lobbyId) in that case,
 	 * unless the game is amid something best not quit (e.g. other session)
@@ -151,6 +156,12 @@ class Matchmaking extends SteamBase {
 	}
 
 	private var SteamWrap_LobbyGetData = Loader.loadRaw("SteamWrap_LobbyGetData", 2);
+
+	public function requestLobbyData(lobby:SteamID):Bool {
+		return SteamWrap_RequestLobbyData(lobby);
+	}
+
+	private var SteamWrap_RequestLobbyData = Loader.loadRaw("SteamWrap_RequestLobbyData", 1);
 
 	/**
 	 * Sets specified lobby to be joinable. If `lobby` is not provided, it uses the current lobby.

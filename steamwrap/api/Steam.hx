@@ -893,6 +893,11 @@ class Steam {
 					matchmaking.whenLobbyUpdate(obj);
 				}
 
+			case "LobbyDataUpdate":
+				if (matchmaking.whenLobbyDataUpdate != null) {
+					matchmaking.whenLobbyDataUpdate(success, obj);
+				}
+
 			case "AvatarImageLoaded":
 				if (whenAvatarImageLoaded.exists(data)) {
 					whenAvatarImageLoaded.get(data)(data);
