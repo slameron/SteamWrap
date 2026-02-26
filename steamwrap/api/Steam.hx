@@ -111,6 +111,7 @@ class Steam {
 	public static var whenItemInstalled:String->Void;
 	public static var whenItemDownloaded:Bool->String->Void;
 	public static var whenQueryUGCRequestSent:SteamUGCQueryCompleted->Void;
+	public static var whenGetAuthTicketForWebApiResponse:Bool->Int->Int->Void;
 
 	/**
 	 * set callback per steamID that will get removed after first use
@@ -183,6 +184,12 @@ class Steam {
 			SteamWrap_RestartAppIfNecessary = cpp.Lib.load("steamwrap", "SteamWrap_RestartAppIfNecessary", 1);
 			SteamWrap_OpenOverlayToURL = cpp.Lib.load("steamwrap", "SteamWrap_OpenOverlayToURL", 1);
 			SteamWrap_OpenOverlay = cpp.Lib.load("steamwrap", "SteamWrap_OpenOverlay", 1);
+			SteamWrap_ActivateGameOverlayToStore = cpp.Lib.load("steamwrap", "SteamWrap_ActivateGameOverlayToStore", 2);
+			SteamWrap_GetAuthTicketForWebApi = cpp.Lib.load("steamwrap", "SteamWrap_GetAuthTicketForWebApi", 1);
+			SteamWrap_GetAuthTicketForWebApiResultHandle = cpp.Lib.load("steamwrap", "SteamWrap_GetAuthTicketForWebApiResultHandle", 0);
+			SteamWrap_GetAuthTicketForWebApiResultHexString = cpp.Lib.load("steamwrap", "SteamWrap_GetAuthTicketForWebApiResultHexString", 0);
+			SteamWrap_CancelAuthTicket = cpp.Lib.load("steamwrap", "SteamWrap_CancelAuthTicket", 1);
+			SteamWrap_GetAppID = cpp.Lib.load("steamwrap", "SteamWrap_GetAppID", 0);
 			SteamWrap_BIsAppInstalled = cpp.Lib.load("steamwrap", "SteamWrap_BIsAppInstalled", 1);
 			SteamWrap_BIsDlcInstalled = cpp.Lib.load("steamwrap", "SteamWrap_BIsDlcInstalled", 1);
 		} catch (e:Dynamic) {
@@ -502,6 +509,12 @@ class Steam {
 		return SteamWrap_GetSteamID();
 	}
 
+	public static function getAppID():Int {
+		if (!active)
+			return appId;
+		return SteamWrap_GetAppID();
+	}
+
 	public static function indicateAchievementProgress(id:String, curProgress:Int, maxProgress:Int):Bool {
 		return active
 			&& report("indicateAchivevementProgress", [id, Std.string(curProgress), Std.string(maxProgress)],
@@ -587,6 +600,36 @@ class Steam {
 		if (!active)
 			return;
 		SteamWrap_OpenOverlay(dialog);
+	}
+
+	public static function activateGameOverlayToStore(appID:Int, eFlag:Int = 0):Bool {
+		if (!active)
+			return false;
+		return SteamWrap_ActivateGameOverlayToStore(appID, eFlag);
+	}
+
+	public static function getAuthTicketForWebApi(identity:String = ""):Int {
+		if (!active)
+			return -1;
+		return SteamWrap_GetAuthTicketForWebApi(identity);
+	}
+
+	public static function getAuthTicketForWebApiResultHandle():Int {
+		if (!active)
+			return -1;
+		return SteamWrap_GetAuthTicketForWebApiResultHandle();
+	}
+
+	public static function getAuthTicketForWebApiResultHexString():String {
+		if (!active)
+			return "";
+		return SteamWrap_GetAuthTicketForWebApiResultHexString();
+	}
+
+	public static function cancelAuthTicket(authTicket:Int):Bool {
+		if (!active)
+			return false;
+		return SteamWrap_CancelAuthTicket(authTicket);
 	}
 
 	public static function restartAppInSteam():Bool {
@@ -870,6 +913,13 @@ class Steam {
 					var result = SteamUGCQueryCompleted.fromString(data);
 					whenQueryUGCRequestSent(result);
 				}
+			case "GetTicketForWebApiResponse":
+				if (whenGetAuthTicketForWebApiResponse != null) {
+					var parts = data.split(",");
+					var handle = parts.length > 0 ? Std.parseInt(parts[0]) : -1;
+					var resultCode = parts.length > 1 ? Std.parseInt(parts[1]) : -1;
+					whenGetAuthTicketForWebApiResponse(success, handle, resultCode);
+				}
 
 			case "LobbyCreated":
 				if (matchmaking.whenLobbyCreated != null)
@@ -977,6 +1027,12 @@ class Steam {
 	private static var SteamWrap_GetCurrentGameLanguage:Dynamic;
 	private static var SteamWrap_OpenOverlayToURL:Dynamic;
 	private static var SteamWrap_OpenOverlay:Dynamic;
+	private static var SteamWrap_ActivateGameOverlayToStore:Int->Int->Bool;
+	private static var SteamWrap_GetAuthTicketForWebApi:String->Int;
+	private static var SteamWrap_GetAuthTicketForWebApiResultHandle:Void->Int;
+	private static var SteamWrap_GetAuthTicketForWebApiResultHexString:Void->String;
+	private static var SteamWrap_CancelAuthTicket:Int->Bool;
+	private static var SteamWrap_GetAppID:Void->Int;
 	private static var SteamWrap_BIsAppInstalled:Dynamic;
 	private static var SteamWrap_BIsDlcInstalled:Dynamic;
 }

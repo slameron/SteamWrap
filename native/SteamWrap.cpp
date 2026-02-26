@@ -188,6 +188,7 @@ static const char *kEventTypeOnAvatarImageLoaded = "AvatarImageLoaded";
 static const char *kEventTypeOnPersonaStateChange = "PersonaStateChange";
 static const char *kEventTypeOnControllerConnected = "ControllerConnected";
 static const char *kEventTypeOnControllerDisconnected = "ControllerDisconnected";
+static const char *kEventTypeOnGetTicketForWebApiResponse = "GetTicketForWebApiResponse";
 
 // A simple data structure that holds on to the native 64-bit handles and maps them to regular ints.
 // This is because it is cumbersome to pass back 64-bit values over CFFI, and strictly speaking, the haxe
@@ -255,6 +256,8 @@ public:
 static steamHandleMap mapControllers;
 static ControllerAnalogActionData_t analogActionData;
 static ControllerMotionData_t motionData;
+static HAuthTicket s_webApiAuthTicketHandle = k_HAuthTicketInvalid;
+static std::string s_webApiAuthTicketHexString = "";
 
 struct Event
 {
@@ -313,6 +316,7 @@ public:
 						m_CallbackAvatarImageLoaded(this, &CallbackHandler::OnAvatarImageLoaded),
 						m_CallbackPersonaStateChange(this, &CallbackHandler::OnPersonaStateChange),
 						m_CallbackControllerConnected(this, &CallbackHandler::OnControllerConnected),
+						m_CallbackGetTicketForWebApiResponse(this, &CallbackHandler::OnGetTicketForWebApiResponse),
 						m_CallbackControllerDisconnected(this, &CallbackHandler::OnControllerDisconnected)
 	{
 	}
@@ -329,6 +333,7 @@ public:
 	STEAM_CALLBACK(CallbackHandler, OnAvatarImageLoaded, AvatarImageLoaded_t, m_CallbackAvatarImageLoaded);
 	STEAM_CALLBACK(CallbackHandler, OnPersonaStateChange, PersonaStateChange_t, m_CallbackPersonaStateChange);
 	STEAM_CALLBACK(CallbackHandler, OnControllerConnected, SteamInputDeviceConnected_t, m_CallbackControllerConnected);
+	STEAM_CALLBACK(CallbackHandler, OnGetTicketForWebApiResponse, GetTicketForWebApiResponse_t, m_CallbackGetTicketForWebApiResponse);
 	STEAM_CALLBACK(CallbackHandler, OnControllerDisconnected, SteamInputDeviceDisconnected_t, m_CallbackControllerDisconnected);
 
 	void FindLeaderboard(const char *name);
@@ -1023,7 +1028,7 @@ extern "C"
 		if (!CheckInit())
 			return alloc_bool(false);
 
-		bool result = SteamUserStats()->RequestCurrentStats();
+		bool result = SteamUserStats()->RequestUserStats(SteamUser()->GetSteamID());
 		return alloc_bool(result);
 	}
 	DEFINE_PRIM(SteamWrap_RequestStats, 0);
@@ -1160,6 +1165,18 @@ extern "C"
 		return alloc_bool(true);
 	}
 	DEFINE_PRIM(SteamWrap_OpenOverlay, 1);
+
+	value SteamWrap_ActivateGameOverlayToStore(value appID, value eFlag)
+	{
+		if (!CheckInit() || !SteamFriends() || !val_is_int(appID) || !val_is_int(eFlag))
+		{
+			return alloc_bool(false);
+		}
+
+		SteamFriends()->ActivateGameOverlayToStore((AppId_t)val_int(appID), (EOverlayToStoreFlag)val_int(eFlag));
+		return alloc_bool(true);
+	}
+	DEFINE_PRIM(SteamWrap_ActivateGameOverlayToStore, 2);
 
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_StartUpdateUGCItem(value id, value itemID)
@@ -1766,6 +1783,15 @@ extern "C"
 	}
 	DEFINE_PRIM(SteamWrap_GetSteamID, 0);
 
+	value SteamWrap_GetAppID()
+	{
+		if (!CheckInit() || !SteamUtils())
+			return alloc_int(0);
+
+		return alloc_int((int)SteamUtils()->GetAppID());
+	}
+	DEFINE_PRIM(SteamWrap_GetAppID, 0);
+
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_GetSmallFriendAvatar(value steamID)
 	{
@@ -1881,6 +1907,55 @@ extern "C"
 		return alloc_bool(result);
 	}
 	DEFINE_PRIM(SteamWrap_RestartAppIfNecessary, 1);
+
+	value SteamWrap_GetAuthTicketForWebApi(value identity)
+	{
+		if (!CheckInit() || !SteamUser() || !val_is_string(identity))
+			return alloc_int(-1);
+
+		HAuthTicket handle = SteamUser()->GetAuthTicketForWebApi(val_string(identity));
+		return alloc_int((int)handle);
+	}
+	DEFINE_PRIM(SteamWrap_GetAuthTicketForWebApi, 1);
+
+	value SteamWrap_GetAuthTicketForWebApiResultHandle()
+	{
+		if (!CheckInit())
+			return alloc_int(-1);
+
+		return alloc_int((int)s_webApiAuthTicketHandle);
+	}
+	DEFINE_PRIM(SteamWrap_GetAuthTicketForWebApiResultHandle, 0);
+
+	value SteamWrap_GetAuthTicketForWebApiResultHexString()
+	{
+		if (!CheckInit())
+			return alloc_string("");
+
+		return alloc_string(s_webApiAuthTicketHexString.c_str());
+	}
+	DEFINE_PRIM(SteamWrap_GetAuthTicketForWebApiResultHexString, 0);
+
+	value SteamWrap_CancelAuthTicket(value authTicket)
+	{
+		if (!CheckInit() || !SteamUser() || !val_is_int(authTicket))
+			return alloc_bool(false);
+
+		HAuthTicket handle = (HAuthTicket)val_int(authTicket);
+		if (handle == k_HAuthTicketInvalid)
+			return alloc_bool(false);
+
+		SteamUser()->CancelAuthTicket(handle);
+
+		if (s_webApiAuthTicketHandle == handle)
+		{
+			s_webApiAuthTicketHandle = k_HAuthTicketInvalid;
+			s_webApiAuthTicketHexString.clear();
+		}
+
+		return alloc_bool(true);
+	}
+	DEFINE_PRIM(SteamWrap_CancelAuthTicket, 1);
 
 	//-----------------------------------------------------------------------------------------------------------
 	value SteamWrap_IsOverlayEnabled()
@@ -3225,6 +3300,28 @@ DEFINE_PRIME4(SteamWrap_SendP2PPacket);*/
 	void CallbackHandler::OnControllerDisconnected(SteamInputDeviceDisconnected_t *pResult)
 	{
 		SendEvent(Event(kEventTypeOnControllerDisconnected, true, alloc_int(mapControllers.find(pResult->m_ulDisconnectedDeviceHandle))));
+	}
+
+	void CallbackHandler::OnGetTicketForWebApiResponse(GetTicketForWebApiResponse_t *pResult)
+	{
+		s_webApiAuthTicketHandle = pResult->m_hAuthTicket;
+		s_webApiAuthTicketHexString.clear();
+
+		if (pResult->m_eResult == k_EResultOK && pResult->m_cubTicket > 0)
+		{
+			static const char *HEX_DIGITS = "0123456789abcdef";
+			s_webApiAuthTicketHexString.reserve(pResult->m_cubTicket * 2);
+			for (int i = 0; i < pResult->m_cubTicket; i++)
+			{
+				unsigned char b = pResult->m_rgubTicket[i];
+				s_webApiAuthTicketHexString.push_back(HEX_DIGITS[b >> 4]);
+				s_webApiAuthTicketHexString.push_back(HEX_DIGITS[b & 0x0F]);
+			}
+		}
+
+		std::ostringstream data;
+		data << (int)pResult->m_hAuthTicket << "," << (int)pResult->m_eResult;
+		SendEvent(Event(kEventTypeOnGetTicketForWebApiResponse, pResult->m_eResult == k_EResultOK, data.str().c_str()));
 	}
 
 	//-----------------------------------------------------------------------------------------------------------
