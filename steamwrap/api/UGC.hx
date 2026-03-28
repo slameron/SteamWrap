@@ -322,26 +322,26 @@ class UGC {
 
 		try {
 			// Old-school CFFI calls:
-			SteamWrap_CreateUGCItem = cpp.Lib.load("steamwrap", "SteamWrap_CreateUGCItem", 1);
-			SteamWrap_SetUGCItemContent = cpp.Lib.load("steamwrap", "SteamWrap_SetUGCItemContent", 2);
-			SteamWrap_SetUGCItemDescription = cpp.Lib.load("steamwrap", "SteamWrap_SetUGCItemDescription", 2);
-			SteamWrap_SetUGCItemPreviewImage = cpp.Lib.load("steamwrap", "SteamWrap_SetUGCItemPreviewImage", 2);
-			SteamWrap_SetUGCItemTitle = cpp.Lib.load("steamwrap", "SteamWrap_SetUGCItemTitle", 2);
-			SteamWrap_SetUGCItemTags = cpp.Lib.load("steamwrap", "SteamWrap_SetUGCItemTags", 2);
-			SteamWrap_AddUGCItemKeyValueTag = cpp.Lib.load("steamwrap", "SteamWrap_AddUGCItemKeyValueTag", 3);
-			SteamWrap_RemoveUGCItemKeyValueTags = cpp.Lib.load("steamwrap", "SteamWrap_RemoveUGCItemKeyValueTags", 2);
-			SteamWrap_SetUGCItemVisibility = cpp.Lib.load("steamwrap", "SteamWrap_SetUGCItemVisibility", 2);
-			SteamWrap_StartUpdateUGCItem = cpp.Lib.load("steamwrap", "SteamWrap_StartUpdateUGCItem", 2);
-			SteamWrap_SubmitUGCItemUpdate = cpp.Lib.load("steamwrap", "SteamWrap_SubmitUGCItemUpdate", 2);
-			SteamWrap_GetSubscribedItems = cpp.Lib.load("steamwrap", "SteamWrap_GetSubscribedItems", 0);
-			SteamWrap_GetItemDownloadInfo = cpp.Lib.load("steamwrap", "SteamWrap_GetItemDownloadInfo", 1);
-			SteamWrap_GetItemInstallInfo = cpp.Lib.load("steamwrap", "SteamWrap_GetItemInstallInfo", 2);
-			SteamWrap_CreateQueryUserUGCRequest = cpp.Lib.load("steamwrap", "SteamWrap_CreateQueryUserUGCRequest", 5);
-			SteamWrap_CreateQueryAllUGCRequest = cpp.Lib.load("steamwrap", "SteamWrap_CreateQueryAllUGCRequest", 5);
-			SteamWrap_CreateQueryUGCDetailsRequest = cpp.Lib.load("steamwrap", "SteamWrap_CreateQueryUGCDetailsRequest", 1);
-			SteamWrap_GetQueryUGCResult = cpp.Lib.load("steamwrap", "SteamWrap_GetQueryUGCResult", 2);
-			SteamWrap_GetQueryUGCKeyValueTag = cpp.Lib.load("steamwrap", "SteamWrap_GetQueryUGCKeyValueTag", 5);
-			SteamWrap_GetQueryUGCMetadata = cpp.Lib.load("steamwrap", "SteamWrap_GetQueryUGCMetadata", 3);
+			SteamWrap_CreateUGCItem = Loader.loadRaw("SteamWrap_CreateUGCItem", 1);
+			SteamWrap_SetUGCItemContent = Loader.loadRaw("SteamWrap_SetUGCItemContent", 2);
+			SteamWrap_SetUGCItemDescription = Loader.loadRaw("SteamWrap_SetUGCItemDescription", 2);
+			SteamWrap_SetUGCItemPreviewImage = Loader.loadRaw("SteamWrap_SetUGCItemPreviewImage", 2);
+			SteamWrap_SetUGCItemTitle = Loader.loadRaw("SteamWrap_SetUGCItemTitle", 2);
+			SteamWrap_SetUGCItemTags = Loader.loadRaw("SteamWrap_SetUGCItemTags", 2);
+			SteamWrap_AddUGCItemKeyValueTag = Loader.loadRaw("SteamWrap_AddUGCItemKeyValueTag", 3);
+			SteamWrap_RemoveUGCItemKeyValueTags = Loader.loadRaw("SteamWrap_RemoveUGCItemKeyValueTags", 2);
+			SteamWrap_SetUGCItemVisibility = Loader.loadRaw("SteamWrap_SetUGCItemVisibility", 2);
+			SteamWrap_StartUpdateUGCItem = Loader.loadRaw("SteamWrap_StartUpdateUGCItem", 2);
+			SteamWrap_SubmitUGCItemUpdate = Loader.loadRaw("SteamWrap_SubmitUGCItemUpdate", 2);
+			SteamWrap_GetSubscribedItems = Loader.loadRaw("SteamWrap_GetSubscribedItems", 0);
+			SteamWrap_GetItemDownloadInfo = Loader.loadRaw("SteamWrap_GetItemDownloadInfo", 1);
+			SteamWrap_GetItemInstallInfo = Loader.loadRaw("SteamWrap_GetItemInstallInfo", 2);
+			SteamWrap_CreateQueryUserUGCRequest = Loader.loadRaw("SteamWrap_CreateQueryUserUGCRequest", 5);
+			SteamWrap_CreateQueryAllUGCRequest = Loader.loadRaw("SteamWrap_CreateQueryAllUGCRequest", 5);
+			SteamWrap_CreateQueryUGCDetailsRequest = Loader.loadRaw("SteamWrap_CreateQueryUGCDetailsRequest", 1);
+			SteamWrap_GetQueryUGCResult = Loader.loadRaw("SteamWrap_GetQueryUGCResult", 2);
+			SteamWrap_GetQueryUGCKeyValueTag = Loader.loadRaw("SteamWrap_GetQueryUGCKeyValueTag", 5);
+			SteamWrap_GetQueryUGCMetadata = Loader.loadRaw("SteamWrap_GetQueryUGCMetadata", 3);
 		} catch (e:Dynamic) {
 			customTrace("Running non-Steam version (" + e + ")");
 			return;
