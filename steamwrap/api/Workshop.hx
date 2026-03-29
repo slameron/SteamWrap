@@ -194,8 +194,8 @@ class Workshop
 		
 		try {
 			//Old-school CFFI calls:
-			SteamWrap_GetUGCDownloadProgress = cpp.Lib.load("steamwrap", "SteamWrap_GetUGCDownloadProgress", 1);
-			SteamWrap_UGCRead = cpp.Lib.load("steamwrap", "SteamWrap_UGCRead", 4);
+			SteamWrap_GetUGCDownloadProgress = Loader.loadRaw("SteamWrap_GetUGCDownloadProgress", 1);
+			SteamWrap_UGCRead = Loader.loadRaw("SteamWrap_UGCRead", 4);
 		}
 		catch (e:Dynamic) {
 			customTrace("Running non-Steam version (" + e + ")");

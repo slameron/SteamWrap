@@ -122,9 +122,9 @@ class Cloud
 		
 		try {
 			//Old-school CFFI calls:
-			SteamWrap_FileRead  = cpp.Lib.load("steamwrap", "SteamWrap_FileRead", 1);
-			SteamWrap_FileWrite = cpp.Lib.load("steamwrap", "SteamWrap_FileWrite", 2);
-			SteamWrap_GetQuota = cpp.Lib.load("steamwrap", "SteamWrap_GetQuota", 0);
+			SteamWrap_FileRead  = Loader.loadRaw("SteamWrap_FileRead", 1);
+			SteamWrap_FileWrite = Loader.loadRaw("SteamWrap_FileWrite", 2);
+			SteamWrap_GetQuota = Loader.loadRaw("SteamWrap_GetQuota", 0);
 		}
 		catch (e:Dynamic) {
 			customTrace("Running non-Steam version (" + e + ")");

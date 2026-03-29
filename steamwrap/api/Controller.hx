@@ -563,26 +563,26 @@ class Controller {
 
 		try {
 			// Old-school CFFI calls:
-			SteamWrap_GetConnectedControllers = cpp.Lib.load("steamwrap", "SteamWrap_GetConnectedControllers", 0);
-			SteamWrap_GetInputTypeForHandle = cpp.Lib.load("steamwrap", "SteamWrap_GetInputTypeForHandle", 1);
-			// SteamWrap_GetGamepadIndexForController = cpp.Lib.load("steamwrap", "SteamWrap_GetGamepadIndexForController", 1);
-			SteamWrap_GetControllerForGamepadIndex = cpp.Lib.load("steamwrap", "SteamWrap_GetControllerForGamepadIndex", 1);
-			SteamWrap_GetInputTypeForControllerIndex = cpp.Lib.load("steamwrap", "SteamWrap_GetInputTypeForControllerIndex", 1);
-			SteamWrap_GetDigitalActionOrigins = cpp.Lib.load("steamwrap", "SteamWrap_GetDigitalActionOrigins", 3);
-			SteamWrap_GetEnteredGamepadTextInput = cpp.Lib.load("steamwrap", "SteamWrap_GetEnteredGamepadTextInput", 0);
-			SteamWrap_GetAnalogActionOrigins = cpp.Lib.load("steamwrap", "SteamWrap_GetAnalogActionOrigins", 3);
-			SteamWrap_InitControllers = cpp.Lib.load("steamwrap", "SteamWrap_InitControllers", 0);
-			SteamWrap_ShowBindingPanel = cpp.Lib.load("steamwrap", "SteamWrap_ShowBindingPanel", 1);
-			SteamWrap_GetGlyphForActionOrigin = cpp.Lib.load("steamwrap", "SteamWrap_GetGlyphForActionOrigin", 1);
-			SteamWrap_GetStringForActionOrigin = cpp.Lib.load("steamwrap", "SteamWrap_GetStringForActionOrigin", 1);
-			SteamWrap_ShutdownControllers = cpp.Lib.load("steamwrap", "SteamWrap_ShutdownControllers", 0);
+			SteamWrap_GetConnectedControllers = Loader.loadRaw("SteamWrap_GetConnectedControllers", 0);
+			SteamWrap_GetInputTypeForHandle = Loader.loadRaw("SteamWrap_GetInputTypeForHandle", 1);
+			// SteamWrap_GetGamepadIndexForController = Loader.loadRaw("SteamWrap_GetGamepadIndexForController", 1);
+			SteamWrap_GetControllerForGamepadIndex = Loader.loadRaw("SteamWrap_GetControllerForGamepadIndex", 1);
+			SteamWrap_GetInputTypeForControllerIndex = Loader.loadRaw("SteamWrap_GetInputTypeForControllerIndex", 1);
+			SteamWrap_GetDigitalActionOrigins = Loader.loadRaw("SteamWrap_GetDigitalActionOrigins", 3);
+			SteamWrap_GetEnteredGamepadTextInput = Loader.loadRaw("SteamWrap_GetEnteredGamepadTextInput", 0);
+			SteamWrap_GetAnalogActionOrigins = Loader.loadRaw("SteamWrap_GetAnalogActionOrigins", 3);
+			SteamWrap_InitControllers = Loader.loadRaw("SteamWrap_InitControllers", 0);
+			SteamWrap_ShowBindingPanel = Loader.loadRaw("SteamWrap_ShowBindingPanel", 1);
+			SteamWrap_GetGlyphForActionOrigin = Loader.loadRaw("SteamWrap_GetGlyphForActionOrigin", 1);
+			SteamWrap_GetStringForActionOrigin = Loader.loadRaw("SteamWrap_GetStringForActionOrigin", 1);
+			SteamWrap_ShutdownControllers = Loader.loadRaw("SteamWrap_ShutdownControllers", 0);
 
-			SteamWrap_GetControllerMaxCount = cpp.Lib.load("steamwrap", "SteamWrap_GetControllerMaxCount", 0);
-			SteamWrap_GetControllerMaxAnalogActions = cpp.Lib.load("steamwrap", "SteamWrap_GetControllerMaxAnalogActions", 0);
-			SteamWrap_GetControllerMaxDigitalActions = cpp.Lib.load("steamwrap", "SteamWrap_GetControllerMaxDigitalActions", 0);
-			SteamWrap_GetControllerMaxOrigins = cpp.Lib.load("steamwrap", "SteamWrap_GetControllerMaxOrigins", 0);
-			SteamWrap_GetControllerMaxAnalogActionData = cpp.Lib.load("steamwrap", "SteamWrap_GetControllerMaxAnalogActionData", 0);
-			SteamWrap_GetControllerMinAnalogActionData = cpp.Lib.load("steamwrap", "SteamWrap_GetControllerMinAnalogActionData", 0);
+			SteamWrap_GetControllerMaxCount = Loader.loadRaw("SteamWrap_GetControllerMaxCount", 0);
+			SteamWrap_GetControllerMaxAnalogActions = Loader.loadRaw("SteamWrap_GetControllerMaxAnalogActions", 0);
+			SteamWrap_GetControllerMaxDigitalActions = Loader.loadRaw("SteamWrap_GetControllerMaxDigitalActions", 0);
+			SteamWrap_GetControllerMaxOrigins = Loader.loadRaw("SteamWrap_GetControllerMaxOrigins", 0);
+			SteamWrap_GetControllerMaxAnalogActionData = Loader.loadRaw("SteamWrap_GetControllerMaxAnalogActionData", 0);
+			SteamWrap_GetControllerMinAnalogActionData = Loader.loadRaw("SteamWrap_GetControllerMinAnalogActionData", 0);
 		} catch (e:Dynamic) {
 			customTrace("Running non-Steam version (" + e + ")");
 			return;
